@@ -1,6 +1,6 @@
-import unittest, json
+import unittest
 from app import create_app
-from app.v1.models.orders import Orders
+from app.api.v1 import Orders
 
 Order_obj = Orders()
 
