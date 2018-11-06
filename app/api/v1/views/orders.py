@@ -11,3 +11,4 @@ class Order(Resource):
     def get(self):
         response = db.get_all_order()
         return response, 200
+

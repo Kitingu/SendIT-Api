@@ -1,15 +1,15 @@
 import unittest
 from app import create_app
-from app.api.v1 import Orders
+from app.api.v1.models.orders_model import OrdersModel
 
-Order_obj = Orders()
+db = OrdersModel
 
 
 class BaseTest(unittest.TestCase):
     """ this is a class that initialises test data for all the test"""
 
     def setUp(self):
-        self.app = create_app()
+        self.app = create_app("testing")
         self.client = self.app.test_client()
 
         self.test_order = {"parcel_id": 1,
@@ -27,4 +27,4 @@ class BaseTest(unittest.TestCase):
         self.invalid_update = {"destination":1234225}
 
     def tearDown(self):
-        Order_obj.orders.clear()
+        pass
