@@ -2,6 +2,7 @@ from flask_restplus import Resource, Namespace, reqparse, fields
 # from app.api.v1.models.orders_model import OrdersModel
 from app.api.utils.parcel_validator import ParcelSchema
 from ..models.orders_model import OrdersModel
+from marshmallow import post_load
 
 db = OrdersModel()
 v1_ns = Namespace('parcels')
@@ -28,11 +29,12 @@ class Order(Resource):
         return response, 200
 
     @v1_ns.expect(new_order)
+    @post_load
     def post(self):
         data = v1_ns.payload
         schema = ParcelSchema()
-        schema_data = schema.load(data)
-        errors = schema_data.errors
+        result = schema.load(data)
+        errors = result.errors
         error_types = ['sender_name', 'receiver_name', 'receiver_contact', 'weight', 'pickup_location', 'destination']
         for e in error_types:
             if e in errors.keys():
@@ -59,11 +61,11 @@ class Orders(Resource):
         parcel = db.get_single_order(parcel_id)
         if parcel:
             parser.add_argument('status',
-                                type=str)
+                                type=str,
+                                required=True,
+                                help='input cancel or CANCEL to cancel the order')
             data = parser.parse_args()
             if data['status'] == 'CANCEL' or data['status'] == 'cancel':
                 db.update_order(parcel_id, 'cancelled')
                 return {"message": "success", "new details": db.get_single_order(parcel_id)}
             return {"error": "input cancel or CANCEL to cancel the order"}, 400
-
-
