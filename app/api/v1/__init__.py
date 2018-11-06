@@ -10,4 +10,4 @@ v1_api = Api(v1_blueprint,
              contact_email="benlegendj@gmail.com")
 
 
-v1_api.add_namespace(v1_ns )
+v1_api.add_namespace(v1_ns)

@@ -2,6 +2,7 @@ from flask_restplus import Resource, Namespace, reqparse, fields
 # from app.api.v1.models.orders_model import OrdersModel
 from app.api.utils.parcel_validator import ParcelSchema
 from ..models.orders_model import OrdersModel
+
 db = OrdersModel()
 v1_ns = Namespace('parcels')
 new_order = v1_ns.model('Orders', {
@@ -12,6 +13,7 @@ new_order = v1_ns.model('Orders', {
     'pickup_location': fields.String('kiambu'),
     'destination': fields.String("nairobi")
 })
+
 
 @v1_ns.route('/')
 class Order(Resource):
@@ -36,7 +38,14 @@ class Order(Resource):
                         data['pickup_location'], \
                         data['destination'])
         return {"success": "order submitted successfully",
-                "Order details": data},201
+                "Order details": data}, 201
 
 
+@v1_ns.route('/<int:parcel_id>')
+class Orders(Resource):
 
+    def get(self, parcel_id):
+        response = db.get_single_order(parcel_id)
+        if response:
+            return {"message":response}, 200
+        return {"error": "parcel order does not exist"}, 404

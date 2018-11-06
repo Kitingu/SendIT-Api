@@ -2,7 +2,7 @@ import unittest
 from app import create_app
 from app.api.v1.models.orders_model import OrdersModel
 
-db = OrdersModel
+Order_obj= OrdersModel()
 
 
 class BaseTest(unittest.TestCase):
@@ -31,4 +31,4 @@ class BaseTest(unittest.TestCase):
         self.invalid_update = {"destination": 1234225}
 
     def tearDown(self):
-        pass
+        Order_obj.db.clear()
