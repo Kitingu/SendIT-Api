@@ -13,6 +13,9 @@ new_order = v1_ns.model('Orders', {
     'pickup_location': fields.String('kiambu'),
     'destination': fields.String("nairobi")
 })
+update_order = v1_ns.model('order', {
+    'status': fields.String(description='cancel')
+})
 
 
 @v1_ns.route('/')
@@ -47,5 +50,20 @@ class Orders(Resource):
     def get(self, parcel_id):
         response = db.get_single_order(parcel_id)
         if response:
-            return {"message":response}, 200
+            return {"message": response}, 200
         return {"error": "parcel order does not exist"}, 404
+
+    @v1_ns.expect(update_order)
+    def put(self, parcel_id):
+        parser = reqparse.RequestParser()
+        parcel = db.get_single_order(parcel_id)
+        if parcel:
+            parser.add_argument('status',
+                                type=str)
+            data = parser.parse_args()
+            if data['status'] == 'CANCEL' or data['status'] == 'cancel':
+                db.update_order(parcel_id, 'cancelled')
+                return {"message": "success", "new details": db.get_single_order(parcel_id)}
+            return {"error": "input cancel or CANCEL to cancel the order"}, 400
+
+

@@ -33,10 +33,10 @@ class OrdersModel:
     def delete_order(self, parcel_id):
         del self.db[parcel_id]
 
-    def update_order(self, parcel_id, destination):
+    def update_order(self, parcel_id, status):
         order = self.get_single_order(parcel_id)
         if order:
-            order['destination'] = destination
+            order['status'] = status
             return order
 
 
