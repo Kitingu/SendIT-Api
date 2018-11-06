@@ -40,7 +40,7 @@ class OrdersModel:
             return order
 
 
-# ben = OrdersModel()
-# print(ben.create_order("benedict", "alfred mutua", "bendeh@gmail.com", 10, "Kisumu", "Nairobi"))
+ben = OrdersModel()
+print(ben.create_order("benedict", "alfred mutua", "bendeh@gmail.com", 10, "Kisumu", "Nairobi"))
 # # print(ben.get_all_order())
 # print(ben.get_single_order(1))
