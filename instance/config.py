@@ -29,7 +29,7 @@ class ProductionConfig(Config):
     TESTING = False
 
 
-app_config = {"development": DevelopmentConfig,
+app_config = {'development': DevelopmentConfig,
               'testing': TestingConfig,
               'staging': StagingConfig,
               'production': ProductionConfig

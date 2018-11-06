@@ -12,11 +12,15 @@ class BaseTest(unittest.TestCase):
         self.app = create_app("testing")
         self.client = self.app.test_client()
 
-        self.test_order = {"parcel_id": 1,
-                           "weight": "1.5",
-                           "pick_up_location": "kiambu",
-                           "destination": "nairobi",
-                           "price": 500}
+
+        self.test_order = {
+            "sender_name": "ben",
+            "receiver_name": "Asael",
+            "receiver_contact": "Asael@gmail.com",
+            "weight": 10,
+            "pickup_location": "Kiambu",
+            "destination": "Nairobi"
+        }
 
         self.invalid_order = {"parcel_id": "",
                               "weight": "",
@@ -24,7 +28,7 @@ class BaseTest(unittest.TestCase):
                               "destination": "",
                               "price": 500}
         self.update_order = {"destination": "mathare"}
-        self.invalid_update = {"destination":1234225}
+        self.invalid_update = {"destination": 1234225}
 
     def tearDown(self):
         pass
