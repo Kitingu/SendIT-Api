@@ -28,7 +28,7 @@ class User(Resource):
         hashed_pass = generate_password_hash(data['password'])
         new_user = db.get_single_user(data['email'])
         if new_user:
-            return "user with email: {} already exists".format(data["email"])
+            return "user with email: {} already exists".format(data["email"]),409
         if check_password_hash(hashed_pass, data['confirm_password']):
             db.save(data['email'], data['username'], hashed_pass)
             return {"message":"User registered successfully"}, 201

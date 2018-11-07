@@ -46,7 +46,7 @@ class Order(Resource):
                 "Order details": data}, 201
 
 
-@v1_order.route('/<int:parcel_id>')
+@v1_order.route('/<int:parcel_id>/')
 class Orders(Resource):
 
     def get(self, parcel_id):
@@ -69,3 +69,4 @@ class Orders(Resource):
                 db.update_order(parcel_id, 'cancelled')
                 return {"message": "success", "new details": db.get_single_order(parcel_id)}
             return {"error": "input cancel or CANCEL to cancel the order"}, 400
+        return {"error": "parcel does not exist"},404
