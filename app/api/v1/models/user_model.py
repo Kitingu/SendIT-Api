@@ -3,7 +3,7 @@ import uuid
 users = {}
 
 
-class User:
+class UserModel:
 
     def __init__(self):
         """initialize a data structure that will act as a database"""
