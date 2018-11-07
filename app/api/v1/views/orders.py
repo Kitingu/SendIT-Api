@@ -5,8 +5,8 @@ from ..models.orders_model import OrdersModel
 from marshmallow import post_load
 
 db = OrdersModel()
-v1_ns = Namespace('parcels')
-new_order = v1_ns.model('Orders', {
+v1_order = Namespace('parcels')
+new_order = v1_order.model('Orders', {
     'sender_name': fields.String(description="John Doe"),
     'receiver_name': fields.String("Alfie kavaluku"),
     'receiver_contact': fields.String("alfie@gmail.com"),
@@ -14,12 +14,12 @@ new_order = v1_ns.model('Orders', {
     'pickup_location': fields.String('kiambu'),
     'destination': fields.String("nairobi")
 })
-update_order = v1_ns.model('order', {
+update_order = v1_order.model('order', {
     'status': fields.String(description='cancel')
 })
 
 
-@v1_ns.route('/')
+@v1_order.route('/')
 class Order(Resource):
     """ class that owns the routes to create and get all parcels"""
 
@@ -28,10 +28,10 @@ class Order(Resource):
         response = db.get_all_order()
         return response, 200
 
-    @v1_ns.expect(new_order)
+    @v1_order.expect(new_order)
     @post_load
     def post(self):
-        data = v1_ns.payload
+        data = v1_order.payload
         schema = ParcelSchema()
         result = schema.load(data)
         errors = result.errors
@@ -46,7 +46,7 @@ class Order(Resource):
                 "Order details": data}, 201
 
 
-@v1_ns.route('/<int:parcel_id>')
+@v1_order.route('/<int:parcel_id>')
 class Orders(Resource):
 
     def get(self, parcel_id):
@@ -55,7 +55,7 @@ class Orders(Resource):
             return {"message": response}, 200
         return {"error": "parcel order does not exist"}, 404
 
-    @v1_ns.expect(update_order)
+    @v1_order.expect(update_order)
     def put(self, parcel_id):
         parser = reqparse.RequestParser()
         parcel = db.get_single_order(parcel_id)

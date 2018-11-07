@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask_restplus import Api
-from.views.orders import v1_ns
+from.views.orders import v1_order
+from .views.user import v1_user
 
 v1_blueprint = Blueprint('v1_blueprint', __name__,url_prefix='/api/v1')
 v1_api = Api(v1_blueprint,
@@ -10,4 +11,5 @@ v1_api = Api(v1_blueprint,
              contact_email="benlegendj@gmail.com")
 
 
-v1_api.add_namespace(v1_ns)
+v1_api.add_namespace(v1_order)
+v1_api.add_namespace(v1_user)

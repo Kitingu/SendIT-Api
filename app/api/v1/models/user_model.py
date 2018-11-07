@@ -39,7 +39,7 @@ class UserModel:
         return "you are not admin"
 
 
-ben = User()
+ben = UserModel()
 ben.save('ben@gmail.com', 'asdf', 'pass')
 print(ben.get_single_user('ben@gmail.com'))
 print(ben.isadmin('ben@gmail.com'))
