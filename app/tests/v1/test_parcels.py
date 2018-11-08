@@ -25,7 +25,7 @@ class TestCreateOrder(BaseTest):
         resp = self.client.post('/api/v1/parcels/', data=json.dumps(self.test_order),
                                 content_type='application/json')
         self.assertEqual(resp.status_code, 201)
-        response = self.client.get('/api/v1/parcels/1/')
+        response = self.client.get('/api/v1/parcels/1')
         self.assertEqual(response.status_code, 200)
 
     def test_get_non_existing_parcel(self):
@@ -57,6 +57,6 @@ class TestCreateOrder(BaseTest):
         resp = self.client.post('/api/v1/parcels/', data=json.dumps(self.test_order),
                                 content_type='application/json')
         self.assertEqual(resp.status_code, 201)
-        response = self.client.put('/api/v1/parcels/1/', data=json.dumps(self.invalid_update),
+        response = self.client.put('/api/v1/parcels/1', data=json.dumps(self.invalid_update),
                                    content_type='application/json')
         self.assertEqual(response.status_code, 400)

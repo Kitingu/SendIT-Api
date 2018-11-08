@@ -1,5 +1,5 @@
 from marshmallow import Schema, fields, ValidationError
-
+from flask_restplus import reqparse,inputs
 
 def validate_length(input):
     if input.strip() == '':
@@ -26,3 +26,18 @@ class UserSchema(Schema):
     username = fields.String(required=True, validate=validate_length)
     email = fields.Email(required=True, validate=validate_length)
     password = fields.String(required=True, validate=validate_length)
+
+class LoginParser:
+    parser = reqparse.RequestParser()
+
+    parser.add_argument('password',
+                        type=str,
+                        required=True,
+                        location='json',
+                        help="This field cannot be blank")
+
+    parser.add_argument('email',
+                        type=inputs.regex(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'),
+                        required=True,
+                        location='json',
+                        help="please enter a valid date")

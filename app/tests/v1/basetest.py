@@ -2,6 +2,7 @@ import unittest
 from app import create_app
 from app.api.v1.models.orders_model import OrdersModel
 from app.api.v1.models.user_model import UserModel
+
 Order_obj = OrdersModel()
 User_obj = UserModel()
 
@@ -22,11 +23,13 @@ class BaseTest(unittest.TestCase):
             "destination": "Nairobi"
         }
 
-        self.invalid_order = {"parcel_id": "",
-                              "weight": "",
-                              "pick_up_location": 123,
-                              "destination": "",
-                              "price": 500}
+        self.invalid_order = {
+            "sender_name": "ben",
+            "parcel_id": "",
+            "receiver_contact": "Asael@gmail.com",
+            "weight": "",
+            "pick_up_location": 123,
+            "destination": ""}
         self.test_user = {
             "email": "asdf@gmail.com",
             "username": "test_user",
@@ -52,7 +55,6 @@ class BaseTest(unittest.TestCase):
     def tearDown(self):
         Order_obj.db.clear()
         User_obj.db.clear()
-
 
 
 if __name__ == '__main__':

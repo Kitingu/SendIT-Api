@@ -1,5 +1,5 @@
 from flask_restplus import Resource, Namespace, reqparse, fields
-# from app.api.v1.models.orders_model import OrdersModel
+from flask import request
 from app.api.utils.parcel_validator import ParcelSchema
 from ..models.orders_model import OrdersModel
 from marshmallow import post_load
@@ -19,7 +19,6 @@ update_order = v1_order.model('order', {
 })
 
 
-@v1_order.route('/')
 class Order(Resource):
     """ class that owns the routes to create and get all parcels"""
 
@@ -31,6 +30,8 @@ class Order(Resource):
     @v1_order.expect(new_order)
     @post_load
     def post(self):
+        if not request.is_json:
+            return {"msg": "Missing JSON in request"}, 400
         data = v1_order.payload
         schema = ParcelSchema()
         result = schema.load(data)
@@ -46,7 +47,6 @@ class Order(Resource):
                 "Order details": data}, 201
 
 
-@v1_order.route('/<int:parcel_id>/')
 class Orders(Resource):
 
     def get(self, parcel_id):
@@ -57,6 +57,8 @@ class Orders(Resource):
 
     @v1_order.expect(update_order)
     def put(self, parcel_id):
+        if not request.is_json:
+            return {"msg": "Missing JSON in request"}, 400
         parser = reqparse.RequestParser()
         parcel = db.get_single_order(parcel_id)
         if parcel:
@@ -69,4 +71,8 @@ class Orders(Resource):
                 db.update_order(parcel_id, 'cancelled')
                 return {"message": "success", "new details": db.get_single_order(parcel_id)}
             return {"error": "input cancel or CANCEL to cancel the order"}, 400
-        return {"error": "parcel does not exist"},404
+        return {"error": "parcel does not exist"}, 404
+
+
+v1_order.add_resource(Order, '/')
+v1_order.add_resource(Orders, '/<int:parcel_id>')
