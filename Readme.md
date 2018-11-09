@@ -1,9 +1,9 @@
 
-[![Build Status](https://travis-ci.org/Kitingu/SendIT-Api.svg?branch=master)](https://travis-ci.org/Kitingu/SendIT-Api)
+[![Build Status](https://travis-ci.org/Kitingu/SendIT-Api.svg?branch=ft-change-paecel-destination-161697078)](https://travis-ci.org/Kitingu/SendIT-Api)
 
 ![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/5433b4da514a0011801a/maintainability)](https://codeclimate.com/github/Kitingu/SendIT-Api/maintainability)
-[![Coverage Status](https://coveralls.io/repos/github/Kitingu/SendIT-Api/badge.svg)](https://coveralls.io/github/Kitingu/SendIT-Api)
+[![Coverage Status](https://coveralls.io/repos/github/Kitingu/SendIT-Api/badge.svg)](https://coveralls.io/github/Kitingu/SendIT-Api?branch=change-paecel-destination-161697078)
 
 SendIT is a courier service that helps users deliver parcels to different destinations. SendIT provides courier quotes based on weight categories.
 
