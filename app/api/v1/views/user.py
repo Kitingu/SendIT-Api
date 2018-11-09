@@ -62,5 +62,6 @@ class Login(Resource):
         return "user does not exist", 400
 
 
-v1_user.add_resource(User,'')
-v1_user.add_resource(Login,'/login')
+
+v1_user.add_resource(User,'',strict_slashes = False)
+v1_user.add_resource(Login,'/login',strict_slashes = False)

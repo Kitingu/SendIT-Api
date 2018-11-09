@@ -49,8 +49,20 @@ class BaseTest(unittest.TestCase):
             "password": "test_p",
             "confirm_password": "test_pass"
         }
+
+        self.login1 = {
+            "email": "as@gmail.com",
+            "password": "test_pass",
+        }
+
+        self.invalid_login = {
+            "email": "@gmail.com",
+            "password": "",
+        }
         self.update_order = {"destination": "mathare"}
-        self.invalid_update = {"destination": 1234225}
+        self.invalid_update = {"destination": ''}
+        self.cancel_order = {"status": "cancel"}
+        self.invalid_cancel_status = {"ghvdshgcs": ''}
 
     def tearDown(self):
         Order_obj.db.clear()

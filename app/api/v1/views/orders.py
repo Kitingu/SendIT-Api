@@ -1,6 +1,6 @@
 from flask_restplus import Resource, Namespace, reqparse, fields
 from flask import request
-from app.api.utils.parcel_validator import ParcelSchema
+from app.api.utils.parcel_validator import ParcelSchema, DestinationParser
 from ..models.orders_model import OrdersModel
 from marshmallow import post_load
 
@@ -16,6 +16,9 @@ new_order = v1_order.model('Orders', {
 })
 update_order = v1_order.model('order', {
     'status': fields.String(description='cancel')
+})
+update_destination = v1_order.model('order', {
+    'destination': fields.String(description='destination')
 })
 
 
@@ -55,6 +58,8 @@ class Orders(Resource):
             return {"message": response}, 200
         return {"error": "parcel order does not exist"}, 404
 
+
+class Cancel(Resource):
     @v1_order.expect(update_order)
     def put(self, parcel_id):
         if not request.is_json:
@@ -74,5 +79,24 @@ class Orders(Resource):
         return {"error": "parcel does not exist"}, 404
 
 
-v1_order.add_resource(Order, '/')
-v1_order.add_resource(Orders, '/<int:parcel_id>')
+class Destination(Resource):
+    @v1_order.expect(update_destination)
+    def put(self, parcel_id):
+        if not request.is_json:
+            return {"msg": "Missing JSON in request"}, 400
+        parcel = db.get_single_order(parcel_id)
+        if parcel:
+
+            data = DestinationParser.parser.parse_args()
+            destination = data['destination']
+            if len(destination) < 3 or destination == '':
+                return {'error': 'please provide a valid destination'}, 400
+            db.update_destination(parcel_id, destination)
+            return {"message": "success", "new details": db.get_single_order(parcel_id)}
+        return {"error": "parcel does not exist"}, 404
+
+
+v1_order.add_resource(Order, '/',strict_slashes = False)
+v1_order.add_resource(Orders, '/<int:parcel_id>',strict_slashes = False)
+v1_order.add_resource(Cancel, '/<int:parcel_id>/cancel',strict_slashes = False)
+v1_order.add_resource(Destination, '/<int:parcel_id>/destination',strict_slashes = False)
