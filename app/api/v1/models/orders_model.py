@@ -18,7 +18,7 @@ class OrdersModel:
             "pickup_location": pickup_location,
             "current_location": pickup_location,
             "destination": destination,
-            "price": price,
+            "price": 'Ksh'+str(price),
             "status": "on-transit"
         }
 
@@ -36,9 +36,15 @@ class OrdersModel:
     def update_order(self, parcel_id, status):
         order = self.get_single_order(parcel_id)
         if order:
-            order['status'] = status
-            return order
-
+            if not order['status'] == 'delivered':
+                order['status'] = status
+                # return order
+    def update_destination(self,parcel_id,destination):
+        order = self.get_single_order(parcel_id)
+        if order:
+            if not order['status'] == 'delivered':
+                order['destination'] = destination
+                # return order
 
 # ben = OrdersModel()
 # print(ben.create_order("benedict", "alfred mutua", "bendeh@gmail.com", 10, "Kisumu", "Nairobi"))
