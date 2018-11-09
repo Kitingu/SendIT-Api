@@ -91,6 +91,8 @@ class Destination(Resource):
             destination = data['destination']
             if len(destination) < 3 or destination == '':
                 return {'error': 'please provide a valid destination'}, 400
+            if not isinstance(destination,str):
+                return {"error":"destination cannot be a number"},400
             db.update_destination(parcel_id, destination)
             return {"message": "success", "new details": db.get_single_order(parcel_id)}
         return {"error": "parcel does not exist"}, 404
