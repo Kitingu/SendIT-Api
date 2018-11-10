@@ -27,26 +27,37 @@ class OrdersModel:
         return self.db
 
     def get_single_order(self, parcel_id):
+        """function that allows user to get a single order"""
         if parcel_id in self.db:
             return self.db[parcel_id]
 
     def delete_order(self, parcel_id):
+        """delete an order"""
         del self.db[parcel_id]
 
     def update_order(self, parcel_id, status):
+        """cancel an order only if its not delivered"""
         order = self.get_single_order(parcel_id)
         if order:
             if not order['status'] == 'delivered':
                 order['status'] = status
                 # return order
     def update_destination(self,parcel_id,destination):
+        """change order destination"""
         order = self.get_single_order(parcel_id)
         if order:
             if not order['status'] == 'delivered':
                 order['destination'] = destination
                 # return order
 
-# ben = OrdersModel()
-# print(ben.create_order("benedict", "alfred mutua", "bendeh@gmail.com", 10, "Kisumu", "Nairobi"))
+    def get_by_specific_user(self,sender_name):
+        """"""
+        order = [order for order in self.db.values() if order['sender_name']==sender_name][0]
+        return order
+
+
+ben = OrdersModel()
+print(ben.create_order("benedict", "alfred mutua", "bendeh@gmail.com", 10, "Kisumu", "Nairobi"))
+print(ben.get_by_specific_user('benedict'))
 # # print(ben.get_all_order())
 # print(ben.get_single_order(1))
