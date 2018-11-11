@@ -6,12 +6,19 @@ class TestCreateOrder(BaseTest):
     ################# test create parcel orders ###############
     def test_create_order(self):
         """test that user can create a parcel delivery order """
+        register = self.client.post('/api/v1/users', data=json.dumps(self.test_user),
+                                         content_type='application/json')
+        self.assertEqual(register.status_code, 201)
+
         resp = self.client.post('/api/v1/parcels', data=json.dumps(self.test_order),
                                 content_type='application/json')
         self.assertEqual(resp.status_code, 201)
 
     def test_create_order_with_invalid_details(self):
         """ test that user cant create an order with invalid details"""
+        register = self.client.post('/api/v1/users', data=json.dumps(self.test_user),
+                                    content_type='application/json')
+        self.assertEqual(register.status_code, 201)
         resp = self.client.post('/api/v1/parcels', data=json.dumps(self.invalid_order),
                                 content_type='application/json')
         self.assertEqual(resp.status_code, 400)
@@ -22,6 +29,9 @@ class TestCreateOrder(BaseTest):
         self.assertEqual(response.status_code, 200)
 
     def test_get_parcel_by_id(self):
+        register = self.client.post('/api/v1/users', data=json.dumps(self.test_user),
+                                    content_type='application/json')
+        self.assertEqual(register.status_code, 201)
         resp = self.client.post('/api/v1/parcels', data=json.dumps(self.test_order),
                                 content_type='application/json')
         self.assertEqual(resp.status_code, 201)
@@ -40,6 +50,9 @@ class TestCreateOrder(BaseTest):
 
     def test_update_parcel(self):
         """test that user can update the destination of a parcel delivery order """
+        register = self.client.post('/api/v1/users', data=json.dumps(self.test_user),
+                                    content_type='application/json')
+        self.assertEqual(register.status_code, 201)
         resp = self.client.post('/api/v1/parcels/', data=json.dumps(self.test_order),
                                 content_type='application/json')
         self.assertEqual(resp.status_code, 201)
@@ -49,6 +62,9 @@ class TestCreateOrder(BaseTest):
 
     def test_cancel_order(self):
         """test that user can cancel a  parcel delivery order """
+        register = self.client.post('/api/v1/users', data=json.dumps(self.test_user),
+                                    content_type='application/json')
+        self.assertEqual(register.status_code, 201)
         resp = self.client.post('/api/v1/parcels/', data=json.dumps(self.test_order),
                                 content_type='application/json')
         self.assertEqual(resp.status_code, 201)
@@ -57,6 +73,9 @@ class TestCreateOrder(BaseTest):
         self.assertEqual(response.status_code, 200)
 
     def test_update_destination_with_invalid_details(self):
+        register = self.client.post('/api/v1/users', data=json.dumps(self.test_user),
+                                    content_type='application/json')
+        self.assertEqual(register.status_code, 201)
         resp = self.client.post('/api/v1/parcels/', data=json.dumps(self.test_order),
                                 content_type='application/json')
         self.assertEqual(resp.status_code, 201)
@@ -65,6 +84,9 @@ class TestCreateOrder(BaseTest):
         self.assertEqual(response.status_code, 400)
 
     def test_cancel_order_with_invalid_details(self):
+        register = self.client.post('/api/v1/users', data=json.dumps(self.test_user),
+                                    content_type='application/json')
+        self.assertEqual(register.status_code, 201)
         resp = self.client.post('/api/v1/parcels/', data=json.dumps(self.test_order),
                                 content_type='application/json')
         self.assertEqual(resp.status_code, 201)

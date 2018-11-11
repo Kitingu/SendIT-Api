@@ -16,7 +16,7 @@ new_order = v1_order.model('Orders', {
     'pickup_location': fields.String('kiambu'),
     'destination': fields.String("nairobi")
 })
-update_order = v1_order.model('order', {
+update_order = v1_order.model('cancel_order', {
     'status': fields.String(description='cancel')
 })
 update_destination = v1_order.model('order', {

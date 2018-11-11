@@ -1,4 +1,4 @@
-import unittest
+import unittest,json
 from app import create_app
 from app.api.v1.models.orders_model import OrdersModel
 from app.api.v1.models.user_model import UserModel
@@ -9,6 +9,7 @@ User_obj = UserModel()
 
 class BaseTest(unittest.TestCase):
     """ this is a class that initialises test data for all the test"""
+
 
     def setUp(self):
         self.app = create_app("testing")
@@ -32,7 +33,7 @@ class BaseTest(unittest.TestCase):
             "destination": ""}
         self.test_user = {
             "email": "asdf@gmail.com",
-            "username": "test_user",
+            "username": "ben",
             "password": "test_pass",
             "confirm_password": "test_pass"
         }
@@ -63,6 +64,9 @@ class BaseTest(unittest.TestCase):
         self.invalid_update = {"destination": ''}
         self.cancel_order = {"status": "cancel"}
         self.invalid_cancel_status = {"ghvdshgcs": ''}
+
+
+
 
     def tearDown(self):
         Order_obj.db.clear()
