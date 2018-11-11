@@ -52,12 +52,13 @@ class OrdersModel:
 
     def get_by_specific_user(self,sender_name):
         """"""
-        order = [order for order in self.db.values() if order['sender_name']==sender_name][0]
+        order = [order for order in self.db.values() if order['sender_name']== sender_name]
         return order
 
 
-ben = OrdersModel()
-print(ben.create_order("benedict", "alfred mutua", "bendeh@gmail.com", 10, "Kisumu", "Nairobi"))
-print(ben.get_by_specific_user('benedict'))
-# # print(ben.get_all_order())
+# ben = OrdersModel()
+# ben.create_order("benedict", "alfred mutua", "bendeh@gmail.com", 10, "Kisumu", "Nairobi")
+# ben.create_order("benedict", "alfred mutua", "bendeh@gmail.com", 10, "Kisumu", "Nairobi")
+# print(ben.get_by_specific_user())
+# print(ben.db)
 # print(ben.get_single_order(1))

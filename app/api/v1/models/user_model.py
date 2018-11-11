@@ -38,8 +38,16 @@ class UserModel:
             return "kasee"
         return "you are not admin"
 
+    def exists(self,username):
+        for user in self.db.values():
+            if user['username'] == username:
+                return True
+            return False
+
+
 
 # ben = UserModel()
 # ben.save('ben@gmail.com', 'asdf', 'pass')
+# print(ben.exists('asdf'))
 # print(ben.get_single_user('ben@gmail.com'))
 # print(ben.isadmin('ben@gmail.com'))

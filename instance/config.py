@@ -3,7 +3,7 @@ class Config(object):
     """Parent configuration class."""
     DEBUG = False
     CSRF_ENABLED = True #Cross-Site Request Forgery
-    SECRET_KEY = "this is secret"
+    SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 class DevelopmentConfig(Config):
