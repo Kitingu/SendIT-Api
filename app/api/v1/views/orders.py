@@ -2,9 +2,11 @@ from flask_restplus import Resource, Namespace, reqparse, fields
 from flask import request
 from app.api.utils.parcel_validator import ParcelSchema, DestinationParser
 from ..models.orders_model import OrdersModel
+from ..models.user_model import UserModel
 from marshmallow import post_load
 
 db = OrdersModel()
+user_db = UserModel()
 v1_order = Namespace('parcels')
 new_order = v1_order.model('Orders', {
     'sender_name': fields.String(description="John Doe"),
@@ -43,11 +45,14 @@ class Order(Resource):
         for e in error_types:
             if e in errors.keys():
                 return {'message': errors[e][0]}, 400
-        db.create_order(data['sender_name'], data['receiver_name'], data['receiver_contact'], data['weight'], \
-                        data['pickup_location'], \
-                        data['destination'])
-        return {"success": "order submitted successfully",
-                "Order details": data}, 201
+        user = user_db.exists(data['sender_name'])
+        if user:
+            db.create_order(data['sender_name'], data['receiver_name'], data['receiver_contact'], data['weight'], \
+                            data['pickup_location'], \
+                            data['destination'])
+            return {"success": "order submitted successfully",
+                    "Order details": data}, 201
+        return {"error": "please sign up to create an order"}
 
 
 class Orders(Resource):
