@@ -38,3 +38,9 @@ class TestUser(BaseTest):
         resp = self.client.post('/api/v1/users/login', data=json.dumps(self.invalid_login),
                                 content_type='application/json')
         self.assertEqual(resp.status_code, 400)
+
+    def test_get_all_users(self):
+        resp = self.client.get('/api/v1/users')
+        self.assertEqual(resp.status_code, 200)
+
+

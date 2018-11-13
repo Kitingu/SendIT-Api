@@ -26,6 +26,7 @@ class User(Resource):
     @v1_user.expect(new_user)
     @post_load()
     def post(self):
+        """route for user registration"""
         if not request.is_json:
             return {"msg": "Missing JSON in request"}, 400
         data = v1_user.payload
@@ -45,10 +46,17 @@ class User(Resource):
             return {"message": "User registered successfully"}, 201
         return {"error": "passwords do not match"}, 401
 
+    def get(self):
+        """route for getting all users"""
+        return user_db.get_all_users()
+
+
+
 
 class Login(Resource):
     @v1_user.expect(user_login)
     def post(self):
+        """route that allows users  to log in"""
         if not request.is_json:
             return {"msg": "Missing JSON in request"}, 400
         data = LoginParser.parser.parse_args()
@@ -71,7 +79,7 @@ class UserParcels(Resource):
     """ route for getting orders made by a specific user"""
 
     def get(self, user_id):
-        """method for getting order by specific user"""
+        """route for getting order by specific user"""
         resp = order_db.get_by_specific_user(user_id)
         if resp:
             return order_db.get_by_specific_user(user_id)

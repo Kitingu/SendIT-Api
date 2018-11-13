@@ -18,7 +18,7 @@ class OrdersModel:
             "pickup_location": pickup_location,
             "current_location": pickup_location,
             "destination": destination,
-            "price": 'Ksh'+str(price),
+            "price": 'Ksh' + str(price),
             "status": "on-transit"
         }
 
@@ -42,7 +42,8 @@ class OrdersModel:
             if not order['status'] == 'delivered':
                 order['status'] = status
                 # return order
-    def update_destination(self,parcel_id,destination):
+
+    def update_destination(self, parcel_id, destination):
         """change order destination"""
         order = self.get_single_order(parcel_id)
         if order:
@@ -50,15 +51,7 @@ class OrdersModel:
                 order['destination'] = destination
                 # return order
 
-    def get_by_specific_user(self,sender_name):
+    def get_by_specific_user(self, sender_name):
         """"""
-        order = [order for order in self.db.values() if order['sender_name']== sender_name]
+        order = [order for order in self.db.values() if order['sender_name'] == sender_name]
         return order
-
-
-# ben = OrdersModel()
-# ben.create_order("benedict", "alfred mutua", "bendeh@gmail.com", 10, "Kisumu", "Nairobi")
-# ben.create_order("benedict", "alfred mutua", "bendeh@gmail.com", 10, "Kisumu", "Nairobi")
-# print(ben.get_by_specific_user())
-# print(ben.db)
-# print(ben.get_single_order(1))

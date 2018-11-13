@@ -7,7 +7,7 @@ class TestCreateOrder(BaseTest):
     def test_create_order(self):
         """test that user can create a parcel delivery order """
         register = self.client.post('/api/v1/users', data=json.dumps(self.test_user),
-                                         content_type='application/json')
+                                    content_type='application/json')
         self.assertEqual(register.status_code, 201)
 
         resp = self.client.post('/api/v1/parcels', data=json.dumps(self.test_order),
@@ -23,7 +23,7 @@ class TestCreateOrder(BaseTest):
                                 content_type='application/json')
         self.assertEqual(resp.status_code, 400)
 
-    #################### test get parcels #################
+
     def test_get_all_orders(self):
         response = self.client.get('/api/v1/parcels')
         self.assertEqual(response.status_code, 200)
@@ -68,8 +68,7 @@ class TestCreateOrder(BaseTest):
         resp = self.client.post('/api/v1/parcels/', data=json.dumps(self.test_order),
                                 content_type='application/json')
         self.assertEqual(resp.status_code, 201)
-        response = self.client.put('/api/v1/parcels/1/cancel', data=json.dumps(self.cancel_order),
-                                   content_type='application/json')
+        response = self.client.put('/api/v1/parcels/1/cancel')
         self.assertEqual(response.status_code, 200)
 
     def test_update_destination_with_invalid_details(self):
@@ -83,13 +82,12 @@ class TestCreateOrder(BaseTest):
                                    content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
-    def test_cancel_order_with_invalid_details(self):
+    def test_cancel_non_existing_order(self):
         register = self.client.post('/api/v1/users', data=json.dumps(self.test_user),
                                     content_type='application/json')
         self.assertEqual(register.status_code, 201)
         resp = self.client.post('/api/v1/parcels/', data=json.dumps(self.test_order),
                                 content_type='application/json')
         self.assertEqual(resp.status_code, 201)
-        response = self.client.put('/api/v1/parcels/1/cancel', data=json.dumps(self.invalid_cancel_status),
-                                   content_type='application/json')
-        self.assertEqual(response.status_code, 400)
+        response = self.client.put('/api/v1/parcels/500/cancel')
+        self.assertEqual(response.status_code, 404)

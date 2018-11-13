@@ -5,30 +5,49 @@
 [![Coverage Status](https://coveralls.io/repos/github/Kitingu/SendIT-Api/badge.svg?branch=ft-change-parcel-destination-161697078)](https://coveralls.io/github/Kitingu/SendIT-Api?branch=ft-change-parcel-destination-161697078)
 
 SendIT is a courier service that helps users deliver parcels to different destinations. SendIT provides courier quotes based on weight categories.
+### Prerequisites
+*Python 3*
 
-## Getting Started
+*Virtual environment*
+
+*Flask*
+
+*Flask rest-plus*
+
+*Postman*
+
+*A browser of your choice*
+
+
+
+# Getting Started
 1. Clone the repository to your machine;
-    *https://github.com/Kitingu/SendIT-Api.git
-2. Open the repo with an IDE of your choice as a project.
-## Prerequisites
-* Python 3
-* Virtual environment.
-* Flask
-* flask rest-plus
-* Postman
-* Browser of your choice
-## Setup
-1 Open terminal. In the root directory;
-* Run the command: virtualenv venv -p python3.6,  to create a virtual <br/>
- <br>environment with the name venv. Folder with the name venv will be created<br>
- 
-<br>Activate the virtual environment by running the command: source /venv/bin/activate<br>
-## Application Requirements
-* The application requirements are clearly listed in the ***requirents.txt*** document.
-   * To install them run the following cmd command:
-     * pip install -r requirements.txt
-<hr> 
-<i>required endpoints</i>
+  ```
+      https://github.com/Kitingu/SendIT-Api.git
+```
+    
+
+2. Initialize and activate a virtualenv:
+  ```
+      $ virtualenv venv -p python3
+      $ source venv/bin/activate
+  ```
+
+3. Install the dependencies:
+  ```
+      $ pip install -r requirements.txt
+  ```
+
+5. Run the development server:
+
+  ```
+      $ export FLASK_APP=run.py
+  ```
+  ```
+      $ flask run
+  ```
+<hr>
+<i>Endpoints</i>
 <table>
 <th>EndPoint </th>
 <th> Functionality</th>
@@ -61,3 +80,27 @@ Create a parcel delivery order
 </td>
 </tr>
 <table>
+
+
+### Built with :
+
+<a href="http://flask.pocoo.org/"><img
+   src="http://flask.pocoo.org/static/badges/powered-by-flask-s.png"
+   border="0"
+   alt="powered by Flask"
+   title="powered by Flask"></a>
+
+### Running tests
+```
+To check if all tests pass - $ pytest
+To check the test Coverage - $nosetests --with-coverage --cover-package=app
+```
+
+### Documentation:
+[Heroku](https://v1-sendit-api.herokuapp.com/api/v1/)
+
+### Author:
+Benedict Mwendwa
+
+### License
+MIT License

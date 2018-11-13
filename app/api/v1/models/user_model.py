@@ -24,30 +24,13 @@ class UserModel:
     def get_all_users(self):
         return {"users": self.db}
 
-    def delete_user(self, email):
-        del self.db[email]
-
     def update_user(self, email, username, password, confirm_password):
         self.users[email] = {
             "username": username,
             "password": password,
             "confirm_password": confirm_password}
 
-    def isadmin(self, email):
-        if self.db[email]['admin'] == True:
-            return "kasee"
-        return "you are not admin"
-
-    def exists(self,username):
+    def exists(self, username):
         for user in self.db.values():
             if user['username'] == username:
                 return True
-            return False
-
-
-
-# ben = UserModel()
-# ben.save('ben@gmail.com', 'asdf', 'pass')
-# print(ben.exists('asdf'))
-# print(ben.get_single_user('ben@gmail.com'))
-# print(ben.isadmin('ben@gmail.com'))
