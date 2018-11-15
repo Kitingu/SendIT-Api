@@ -1,3 +1,6 @@
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0ffba30e190c4972b3260ae82d7c208d)](https://app.codacy.com/app/Kitingu/SendIT-Api?utm_source=github.com&utm_medium=referral&utm_content=Kitingu/SendIT-Api&utm_campaign=Badge_Grade_Dashboard)
+
 SendIT is a courier service that helps users deliver parcels to different destinations. SendIT provides courier quotes based on weight categories.
 <hr> 
 <i>required endpoints</i>
