@@ -4,10 +4,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/5433b4da514a0011801a/maintainability)](https://codeclimate.com/github/Kitingu/SendIT-Api/maintainability)
 [![Coverage Status](https://coveralls.io/repos/github/Kitingu/SendIT-Api/badge.svg?branch=ch-challenge2-feedback-161958259)](https://coveralls.io/github/Kitingu/SendIT-Api?branch=ch-challenge2-feedback-161958259)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/183700ca76f346e5b5b4ca98eb8109ed)](https://www.codacy.com/app/Kitingu/SendIT-Api?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Kitingu/SendIT-Api&amp;utm_campaign=Badge_Grade)
-<<<<<<< HEAD
-<br>
-=======
->>>>>>> ddfc80fc42b1edc7a45df34b169040bb67a654b3
+
 SendIT is a courier service that helps users deliver parcels to different destinations. SendIT provides courier quotes based on weight categories.
 ### Prerequisites
 *Python 3*
