@@ -57,6 +57,8 @@ class Orders(Resource):
 
     def get(self, parcel_id):
         """route to get a single parcel delivery order"""
+        # if not isinstance(parcel_id,int):
+        #     return {"error":"parcel can only be an integer"},404
         response = db.get_single_order(parcel_id)
         if response:
             return {"message": response}, 200
