@@ -2,18 +2,21 @@ from marshmallow import Schema, fields, ValidationError
 from flask_restplus import reqparse, inputs
 import re
 
+
 def validate_length(input):
     if input.strip() == '':
         raise ValidationError('fields cannot be blank')
     elif not re.match(r"^(?=.*[a-z])[a-zA-Z0-9_.-]{3,25}$", input):
         raise ValidationError("{} is not a valid input".format(input))
 
+
 def validate_weight(weight):
     if weight < 0:
         raise ValidationError("please provide valid weight")
 
+
 def validate_password(password):
-    if not re.match(r'[A-Za-z0-9_@#$%^&\*+=,\.`\-]{6,}',password):
+    if not re.match('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$])', password):
         raise ValidationError("please should provide a strong password")
 
 
