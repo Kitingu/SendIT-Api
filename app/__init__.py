@@ -1,6 +1,7 @@
 import os
 from flask import Flask
 from instance.config import app_config
+from flask import jsonify
 
 
 def create_app(config_name):
@@ -11,5 +12,8 @@ def create_app(config_name):
 
     app.register_blueprint(v1_blueprint, url_prefix='/api/v1')
 
-    return app
+    @app.errorhandler(404)
+    def page_not_found(e):
+        return jsonify({"error": "page not not found"}), 404
 
+    return app

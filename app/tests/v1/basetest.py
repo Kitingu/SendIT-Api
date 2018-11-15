@@ -33,26 +33,26 @@ class BaseTest(unittest.TestCase):
         self.test_user = {
             "email": "asdf@gmail.com",
             "username": "ben",
-            "password": "test_pass",
-            "confirm_password": "test_pass"
+            "password": "@Ha1_pass",
+            "confirm_password": "@Ha1_pass"
         }
 
         self.invalid_user = {
             "email": "@gmail.com",
             "username": "",
-            "password": "test_pass",
-            "confirm_password": "test_pass"
+            "password": "@Ha1_pass",
+            "confirm_password": "@Ha1_pass"
         }
         self.wrong_pass = {
             "email": "asdf@gmail.com",
-            "username": "bababayao",
-            "password": "test_p",
+            "username": "asdfg",
+            "password": "@Ha1_pass",
             "confirm_password": "test_pass"
         }
 
         self.login1 = {
             "email": "as@gmail.com",
-            "password": "test_pass",
+            "password": "@Ha1_pass",
         }
 
         self.invalid_login = {
