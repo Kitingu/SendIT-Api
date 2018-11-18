@@ -1,4 +1,5 @@
 import psycopg2
+import psycopg2.extras as extra
 from instance.config import Config
 import os
 
@@ -6,13 +7,14 @@ import os
 class Database:
     def __init__(self):
         self.connection = psycopg2.connect(
-            host=os.getenv('host'),
-            user=os.getenv('user'),
-            dbname=os.getenv('dbname'),
-            password=os.getenv('password')
+            host="localhost",
+            user="postgres",
+            dbname="postgres",
+            password="bendeh911"
         )
 
         self.cursor = self.connection.cursor()
+        self.dict_cursor = self.connection.cursor(cursor_factory=extra.DictCursor)
 
     def commit(self):
         """commits query commands to the database"""
