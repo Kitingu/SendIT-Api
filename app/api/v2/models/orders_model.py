@@ -1,5 +1,5 @@
 from db_init import db
-
+import datetime
 
 class OrderModel:
 
@@ -16,21 +16,22 @@ class OrderModel:
         self.destination = destination,
         self.price = 'Ksh' + str(price),
         self.status = "on-transit"
+        self.time_created = datetime.datetime.now()
 
     def create_order(self):
         try:
             db.cursor.execute(
                 """
                 INSERT INTO parcels(sender_name, receiver_name, receiver_contact, weight,pickup_location,
-                current_location,destination,price,status)
-                VALUES(%s, %s, %s, %s,%s, %s, %s, %s,%s) 
+                current_location,destination,price,status,time_created)
+                VALUES(%s, %s, %s, %s,%s, %s, %s, %s,%s,%s) 
                 """,
                 (self.sender_name, self.receiver_name, self.receiver_contact, self.weight,
                  self.pickup_location, self.current_location, self.destination, self.price,
-                 self.status)
+                 self.status,self.time_created)
             )
             db.commit()
-            return {"message": "sorder created successfully"}
+            return {"message": "order created successfully"}
         except Exception as e:
             return {"Message": e}
 
@@ -41,10 +42,12 @@ class OrderModel:
         parcels = db.cursor.fetchall()
         data = []
         for k, v in enumerate(parcels):
-            parcel_id, sender_name, receiver_name, receiver_contact, weight, pickup_location, current_location, destination, \
-            price, status = v
+            parcel_id, sender_name, sender_id,receiver_name, receiver_contact, weight, pickup_location, \
+            current_location, destination, \
+            price, status,time_created = v
             parcel = {
                 "parcel_id": parcel_id,
+                "sender_id":sender_id,
                 "sender_name": sender_name,
                 "receiver_name": receiver_name,
                 "receiver_contact": receiver_contact,
@@ -54,6 +57,7 @@ class OrderModel:
                 "destination": destination,
                 "price": price,
                 "status": status,
+                "time_created":time_created
             }
             data.append(parcel)
         return data
@@ -145,16 +149,3 @@ class OrderModel:
             return {"Message": e}
 
 
-# ben = OrderModel('benedict', 'mwendwa', 'ben@gmail.com', 5, 'bungoma', 'nairobi')
-# ben.create_order()
-#
-# print(OrderModel.cancel_order(1))
-# print(OrderModel.update_destination(2, "Mombasa"))
-
-# print(OrderModel.get_single_order(2))
-# print(OrderModel.get_all_orders())
-# print(OrderModel.change_location(2,"nakuru"))
-# if OrderModel.check_exists(2):
-#     print("kasee")
-# if OrderModel.check_delivered(1):
-#     print("kasee")

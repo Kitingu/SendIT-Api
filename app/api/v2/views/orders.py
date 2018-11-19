@@ -4,9 +4,9 @@ from app.api.utils.parcel_validator import ParcelSchema, DestinationParser
 from ..models.orders_model import OrderModel
 from ..models.user_model import UserModel
 from marshmallow import post_load
-
-db = OrderModel()
-user_db = UserModel()
+#
+# db = OrderModel()
+# user_db = UserModel()
 v2_order = Namespace('parcels')
 new_order = v2_order.model('Orders', {
     'sender_name': fields.String(description="John Doe"),

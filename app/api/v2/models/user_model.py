@@ -1,52 +1,62 @@
 from manage import db
-
+import datetime
 
 class UserModel:
 
-    def __init__(self, email, username, password, user_id):
+    def __init__(self, email, username, password):
         """initialize an instance of the user class"""
         self.email = email,
         self.username = username,
         self.password = password,
         self.admin = False
-        self.user_id = user_id,
+        self.date_created = datetime.datetime.utcnow()
 
     def create_user(self):
         try:
-            db.cursor.execute("INSERT INTO users (email,first_name,last_name,password) \
-                                VALUES (%s, %s, %s, %s)", (self.email, self.first_name,
-                                                           self.last_name, self.password))
-            return {"message": "user registered successfully"}
+            user = self.exists(self.username)
+            if not user:
+                db.cursor.execute("INSERT INTO users (email,username,password,admin,date_created) \
+                                    VALUES (%s, %s, %s, %s,%s)", (self.email, self.username,
+                                                                self.password,self.admin,self.date_created))
+                db.commit()
+                return {"message": "user registered successfully"}
+            return {"error":"user already exists"}
         except Exception as e:
             return {"Message": e}
 
     @staticmethod
-    def get_single_user(email):
-        db.cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+    def get_single_user(user_id):
+        db.cursor.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
+        user=db.cursor.fetchall()
+        return user
 
     @staticmethod
     def get_all_users():
-        db.cursor.execute("SELECT * FROM users ORDER BY email")
+        db.cursor.execute("SELECT * FROM users ORDER BY user_id")
         users = db.cursor.fetchall()
         data = []
         for k, v in enumerate(users):
-            email, user_id, first_name, last_name = v
+            user_id, username,password,email,admin,date_created = v
             user = {
-                "email": email,
+
                 "user_id": user_id,
-                "first_name": first_name,
-                "last_name": last_name
+                "username": username,
+                "email": email,
+                "admin": admin,
+                "date_created": date_created
             }
             data.append(user)
         return data
 
     @classmethod
-    def update_user(cls, email, password):
-        db.cursor.execute("UPDATE users SET password = %s WHERE email = %s"(email, password))
+    def update_user(cls, user_id, password):
+        db.cursor.execute("UPDATE users SET password = %s WHERE user_id = %s"(password,user_id))
 
     @classmethod
-    def exists(cls, email):
-        db.cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+    def exists(cls, username):
+        db.cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
         user = db.cursor.fetchone()
         if user:
             return True
+
+

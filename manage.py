@@ -1,7 +1,4 @@
 import psycopg2
-import psycopg2.extras as extra
-from instance.config import Config
-import os
 
 
 class Database:
@@ -14,7 +11,6 @@ class Database:
         )
 
         self.cursor = self.connection.cursor()
-        self.dict_cursor = self.connection.cursor(cursor_factory=extra.DictCursor)
 
     def commit(self):
         """commits query commands to the database"""
