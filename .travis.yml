@@ -11,8 +11,10 @@ services:
   - postgresql
 
 before_script:
-  - source .travis.sh
-  - psql -c 'CREATE DATABASE SEND' -U postgres
+ - psql -c 'create database send_it;' -U postgres
+ - export DATABASE_URI="dbname='send_it' host='localhost' port='5432' user='postgres' password=''"
+ - export TESTDB_URI="dbname='send_it' host='localhost' port='5432' user='postgres' password=''"
+ - export FLASK_ENV=testing
 
 
 # command to run tests

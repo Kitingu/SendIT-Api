@@ -3,7 +3,7 @@ import datetime
 
 
 class UserModel:
-    """ class that """
+    """ A blueprint for creating users """
 
     def __init__(self, email, username, password):
         """initialize an instance of the user class"""
@@ -29,12 +29,14 @@ class UserModel:
 
     @staticmethod
     def get_single_user(user_id):
+        """method that returns a single user by their id"""
         db.cursor.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
         user = db.cursor.fetchall()
         return user
 
     @staticmethod
     def get_all_users():
+        """method that returns all users"""
         db.cursor.execute("SELECT * FROM users ORDER BY user_id")
         users = db.cursor.fetchall()
         data = []
@@ -53,11 +55,13 @@ class UserModel:
 
     @classmethod
     def update_user(cls, user_id, password):
+        """method that sets a new user password"""
         db.cursor.execute(
             "UPDATE users SET password = %s WHERE user_id = %s"(password, user_id))
 
     @classmethod
     def exists(cls, username):
+        """method that checks if a user already exists"""
         db.cursor.execute(
             "SELECT * FROM users WHERE username = %s", (username,))
         user = db.cursor.fetchone()

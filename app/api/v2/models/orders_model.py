@@ -3,6 +3,7 @@ import datetime
 
 
 class OrderModel:
+    """blueprint for creating a parcel delivery order"""
 
     def __init__(self, sender_name, receiver_name, receiver_contact, weight, pickup_location, destination):
         """function to create parcel orders """
@@ -20,6 +21,7 @@ class OrderModel:
         self.time_created = datetime.datetime.now()
 
     def create_order(self):
+        """method for creating a parcel delivery order"""
         try:
             db.cursor.execute(
                 """
@@ -128,6 +130,7 @@ class OrderModel:
 
     @staticmethod
     def check_exists(parcel_id):
+        """method that checks if a parcel delivery order already exists"""
         try:
             db.cursor.execute(
                 "SELECT * FROM parcels WHERE parcel_id = %s ", (parcel_id,))
@@ -138,6 +141,7 @@ class OrderModel:
 
     @staticmethod
     def cancelled_or_delivered(parcel_id):
+        """method for cancelling a parcel delivery order"""
         db.cursor.execute("SELECT * FROM parcels WHERE parcel_id = %s AND status = 'on-transit'",
                           (parcel_id,))
         order = db.cursor.fetchone()
@@ -146,7 +150,7 @@ class OrderModel:
 
     @classmethod
     def get_by_specific_user(cls, user_id):
-        """"""
+        """method for getting orders made by a specific user"""
         try:
             db.cursor.execute(
                 "SELECT * FROM parcels WHERE user_id = %s ", (user_id))
