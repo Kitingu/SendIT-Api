@@ -26,9 +26,9 @@ class Database:
         self.cursor.execute(table)
         self.commit()
 
-    def drop_tables(self, table_name):
+    def drop_tables(self):
         """deletes tables"""
-        self.cursor.execute("DROP TABLE IF EXISTS " + table_name + ";")
+        self.cursor.execute("DROP TABLE IF EXISTS parcels, users")
         self.commit()
 
     def close(self):
