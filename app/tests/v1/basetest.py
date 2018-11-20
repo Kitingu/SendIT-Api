@@ -2,16 +2,19 @@ import unittest, json
 from app import create_app
 from app.api.v1.models.orders_model import OrdersModel
 from app.api.v1.models.user_model import UserModel
-
+from app import create_app
+from instance.config import app_config
 Order_obj = OrdersModel()
 User_obj = UserModel()
 
+
+config_name = "testing"
 
 class BaseTest(unittest.TestCase):
     """ this is a class that initialises test data for all the test"""
 
     def setUp(self):
-        self.app = create_app("testing")
+        self.app = create_app(app_config[config_name])
         self.client = self.app.test_client()
 
         self.test_order = {
