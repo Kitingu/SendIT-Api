@@ -1,6 +1,7 @@
 from db_init import db
 import datetime
 
+
 class OrderModel:
 
     def __init__(self, sender_name, receiver_name, receiver_contact, weight, pickup_location, destination):
@@ -28,7 +29,7 @@ class OrderModel:
                 """,
                 (self.sender_name, self.receiver_name, self.receiver_contact, self.weight,
                  self.pickup_location, self.current_location, self.destination, self.price,
-                 self.status,self.time_created)
+                 self.status, self.time_created)
             )
             db.commit()
             return {"message": "order created successfully"}
@@ -42,12 +43,12 @@ class OrderModel:
         parcels = db.cursor.fetchall()
         data = []
         for k, v in enumerate(parcels):
-            parcel_id, sender_name, sender_id,receiver_name, receiver_contact, weight, pickup_location, \
-            current_location, destination, \
-            price, status,time_created = v
+            parcel_id, sender_name, sender_id, receiver_name, receiver_contact, weight, pickup_location, \
+                current_location, destination, \
+                price, status, time_created = v
             parcel = {
                 "parcel_id": parcel_id,
-                "sender_id":sender_id,
+                "sender_id": sender_id,
                 "sender_name": sender_name,
                 "receiver_name": receiver_name,
                 "receiver_contact": receiver_contact,
@@ -57,7 +58,7 @@ class OrderModel:
                 "destination": destination,
                 "price": price,
                 "status": status,
-                "time_created":time_created
+                "time_created": time_created
             }
             data.append(parcel)
         return data
@@ -67,7 +68,8 @@ class OrderModel:
     @staticmethod
     def get_single_order(order_id):
         """function that allows user to get a single order"""
-        db.cursor.execute("SELECT * FROM parcels WHERE parcel_id = %s ", (order_id,))
+        db.cursor.execute(
+            "SELECT * FROM parcels WHERE parcel_id = %s ", (order_id,))
         parcels = db.cursor.fetchone()
         my_parcel = {"parcel_id": parcels[0],
                      "sender_name": parcels[1],
@@ -85,7 +87,8 @@ class OrderModel:
     @staticmethod
     def delete_order(parcel_id):
         """delete an order"""
-        db.cursor.execute("DELETE from parcels WHERE order_id = %s ", (parcel_id,))
+        db.cursor.execute(
+            "DELETE from parcels WHERE order_id = %s ", (parcel_id,))
 
     @classmethod
     def cancel_order(cls, parcel_id):
@@ -114,18 +117,20 @@ class OrderModel:
         return {"order is either cancelled or already delivered"}
 
     @classmethod
-    def change_location(cls,parcel_id,current_location):
+    def change_location(cls, parcel_id, current_location):
+        """ function that allows the admin user to change current location"""
         order = cls.cancelled_or_delivered(parcel_id)
         if order:
             db.cursor.execute("""UPDATE parcels SET current_location =%s WHERE parcel_id = %s""", (current_location,
-                                                                                              parcel_id))
+                                                                                                   parcel_id))
             db.commit()
-            return {"message":cls.get_single_order(parcel_id)}
+            return {"message": cls.get_single_order(parcel_id)}
 
     @staticmethod
     def check_exists(parcel_id):
         try:
-            db.cursor.execute("SELECT * FROM parcels WHERE parcel_id = %s ", (parcel_id,))
+            db.cursor.execute(
+                "SELECT * FROM parcels WHERE parcel_id = %s ", (parcel_id,))
             if db.cursor.fetchone() is not None:
                 return True
         except Exception as e:
@@ -143,9 +148,8 @@ class OrderModel:
     def get_by_specific_user(cls, user_id):
         """"""
         try:
-            db.cursor.execute("SELECT * FROM parcels WHERE user_id = %s ",(user_id))
+            db.cursor.execute(
+                "SELECT * FROM parcels WHERE user_id = %s ", (user_id))
             db.cursor.dictfetchall()
         except Exception as e:
             return {"Message": e}
-
-

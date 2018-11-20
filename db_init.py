@@ -34,7 +34,6 @@ def create_tables():
         """
 
     )
-
     for command in TABLES_SCHEMA:
         db.create_tables(command)
 

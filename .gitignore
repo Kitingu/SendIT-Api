@@ -7,3 +7,4 @@ venv/
 .pytest*
 *.pyc
 .env
+.vscode/

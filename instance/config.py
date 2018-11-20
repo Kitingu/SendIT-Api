@@ -12,6 +12,7 @@ class DevelopmentConfig(Config):
     """Configurations for Development."""
     DEBUG = True
     TESTING = True
+    DATABASE_URI = os.getenv('DATABASE_URI')
 
 
 class TestingConfig(Config):

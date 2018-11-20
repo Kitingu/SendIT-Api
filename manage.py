@@ -1,14 +1,15 @@
+import os
 import psycopg2
+from instance.config import app_config
+
+env = os.getenv('FLASK_ENV')
+url = app_config[env].DATABASE_URI
 
 
 class Database:
     def __init__(self):
-        self.connection = psycopg2.connect(
-            host="localhost",
-            user="postgres",
-            dbname="postgres",
-            password="bendeh911"
-        )
+
+        self.connection = psycopg2.connect(url)
 
         self.cursor = self.connection.cursor()
 
