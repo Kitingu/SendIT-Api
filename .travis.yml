@@ -11,8 +11,9 @@ services:
   - postgresql
 
 before_script:
+  - source .travis.sh
   - psql -c 'CREATE DATABASE SEND' -U postgres
-  - psql -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public to postgres;" -U postgres
+
 
 # command to run tests
 script:
