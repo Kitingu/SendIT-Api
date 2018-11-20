@@ -8,6 +8,13 @@ from .api.v1 import v1_blueprint
 
 config_name = os.getenv('FLASK_ENV')
 
+<<<<<<< HEAD
+=======
+def create_app(config_name):
+    app = Flask(__name__, instance_relative_config=True)
+    # app.config.from_object(app_config[config_name])
+    app.config.from_pyfile('config.py')
+>>>>>>> [Starts #162063395] add user sign up endpoint
 
 def create_app(config=app_config[config_name]):
     app = Flask(__name__, instance_relative_config=True)
