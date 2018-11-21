@@ -1,7 +1,8 @@
-from flask_restplus import Resource, Namespace, fields
+from flask_restplus import Resource, Namespace, fields, reqparse
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import request
-from app.api.utils.parcel_validator import UserSchema
+from flask_jwt_extended import create_access_token
+from app.api.utils.parcel_validator import UserSchema, LoginParser
 from ..models.user_model import UserModel
 from marshmallow import post_load
 
@@ -22,7 +23,7 @@ class User(Resource):
     def post(self):
         """route for user registration"""
         if not request.is_json:
-            return {"msg": "Missing JSON in request"}, 400
+            return {"Message": "Missing user details or invalid input format"}, 400
         data = v2_user.payload
         schema = UserSchema()
         result = schema.load(data)
@@ -45,4 +46,24 @@ class User(Resource):
         return {"error": "passwords do not match"}, 401
 
 
+class Login(Resource):
+    @v2_user.expect(user_login)
+    def post(self):
+        if not request.is_json:
+            return {"Message": "Missing user details or invalid input format"}, 400
+        data = LoginParser.parser.parse_args()
+        email = str(data['email'])
+        password = str(data['password'])
+
+        user = [user for user in UserModel.get_all_users() if user['email'] == email]
+        if user:
+            if check_password_hash(user[0]['password'], password):
+                access_token = create_access_token(identity=user[0]['user_id'])
+                return {"access_token": access_token}, 200
+            return {"msg": "Invalid email or password"}, 401
+
+        return "user does not exist", 400
+
+
 v2_user.add_resource(User, "", strict_slashes=False)
+v2_user.add_resource(Login, "/login", strict_slashes=False)

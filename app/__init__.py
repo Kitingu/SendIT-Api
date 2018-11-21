@@ -5,16 +5,22 @@ from db_init import create_tables
 from flask import jsonify
 from .api.v1 import v1_blueprint
 from .api.v2 import v2_blueprint
-
+from app.api.v2 import v2_api
+from flask_jwt_extended import JWTManager
 config_name = os.getenv('FLASK_ENV')
 
 
 def create_app(config=app_config[config_name]):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config)
+    jwt = JWTManager(app)
+    app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')
+    app.config['JWT_BLACKLIST_ENABLED'] = True
     app.register_blueprint(v1_blueprint, url_prefix='/api/v1')
     app.register_blueprint(v2_blueprint, url_prefix='/api/v2')
     create_tables()
+    api=v2_api
+    jwt._set_error_handler_callbacks(api)
 
     @app.errorhandler(404)
     def page_not_found(e):

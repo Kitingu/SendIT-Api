@@ -30,6 +30,10 @@ class BaseTest(unittest.TestCase):
             "password": "@Ha1_pass",
             "confirm_password": "test_pass"
         }
+        self.login = {
+            "email": "asdf@gmail.com",
+            "password": "@Ha1_pass",
+        }
 
         self.login1 = {
             "email": "as@gmail.com",

@@ -29,10 +29,10 @@ class UserModel:
             return {"Message": e}
 
     @staticmethod
-    def get_single_user(user_id):
+    def get_single_user(email):
         """method that returns a single user by their id"""
-        db.cursor.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
-        user = db.cursor.fetchall()
+        db.cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+        user = db.cursor.fetchone()
         return user
 
     @staticmethod
@@ -48,6 +48,7 @@ class UserModel:
 
                 "user_id": user_id,
                 "username": username,
+                "password":password,
                 "email": email,
                 "admin": admin,
                 "date_created": date_created
@@ -69,4 +70,4 @@ class UserModel:
         user = db.cursor.fetchone()
 
         if user:
-            return True
+            return user
