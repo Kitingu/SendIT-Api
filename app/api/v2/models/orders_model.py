@@ -5,11 +5,12 @@ import datetime
 class OrderModel:
     """blueprint for creating a parcel delivery order"""
 
-    def __init__(self, sender_name, receiver_name, receiver_contact, weight, pickup_location, destination):
+    def __init__(self, sender_name,user_id, receiver_name, receiver_contact, weight, pickup_location, destination):
         """function to create parcel orders """
 
         price = 50 * weight
         self.sender_name = sender_name,
+        self.user_id = user_id
         self.receiver_name = receiver_name,
         self.receiver_contact = receiver_contact,
         self.weight = weight,
@@ -25,11 +26,11 @@ class OrderModel:
         try:
             db.cursor.execute(
                 """
-                INSERT INTO parcels(sender_name, receiver_name, receiver_contact, weight,pickup_location,
+                INSERT INTO parcels(sender_name, user_id, receiver_name, receiver_contact, weight,pickup_location,
                 current_location,destination,price,status,time_created)
-                VALUES(%s, %s, %s, %s,%s, %s, %s, %s,%s,%s) 
+                VALUES(%s, %s, %s, %s, %s,%s, %s, %s, %s,%s,%s) 
                 """,
-                (self.sender_name, self.receiver_name, self.receiver_contact, self.weight,
+                (self.sender_name, self.user_id,self.receiver_name, self.receiver_contact, self.weight,
                  self.pickup_location, self.current_location, self.destination, self.price,
                  self.status, self.time_created)
             )
@@ -46,8 +47,8 @@ class OrderModel:
         data = []
         for k, v in enumerate(parcels):
             parcel_id, sender_name, sender_id, receiver_name, receiver_contact, weight, pickup_location, \
-                current_location, destination, \
-                price, status, time_created = v
+            current_location, destination, \
+            price, status, time_created = v
             parcel = {
                 "parcel_id": parcel_id,
                 "sender_id": sender_id,

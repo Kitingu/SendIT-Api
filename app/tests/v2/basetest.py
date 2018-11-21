@@ -17,6 +17,12 @@ class BaseTest(unittest.TestCase):
             "password": "@Ha1_pass",
             "confirm_password": "@Ha1_pass"
         }
+        self.test_user1 = {
+            "email": "bendeh@gmail.com",
+            "username": "bendeh",
+            "password": "@Ha1_pass",
+            "confirm_password": "@Ha1_pass"
+        }
 
         self.invalid_user = {
             "email": "@gmail.com",
@@ -39,15 +45,35 @@ class BaseTest(unittest.TestCase):
             "email": "as@gmail.com",
             "password": "@Ha1_pass",
         }
+        self.login_header={
+            "email": "bendeh@gmail.com",
+            "password": "@Ha1_pass",
+        }
 
         self.invalid_login = {
             "email": "@gmail.com",
             "password": "",
         }
+        self.test_order = {
+            "sender_name": "benedt",
+            "receiver_name": "abdigg",
+            "receiver_contact": "ben@gmail.com",
+            "weight": 10,
+            "pickup_location": "kisumu",
+            "destination": "kakamega"
+        }
         self.update_order = {"destination": "mathare"}
         self.invalid_update = {"destination": ""}
         self.cancel_order = {"status": "cancel"}
         self.invalid_cancel_status = {"ghvdshgcs": ""}
+
+        user_response = self.client.post('/api/v1/users', data=json.dumps(self.test_user1),
+                                           content_type='application/json')
+        user_login = self.client.post('/api/v1/users/login', data=json.dumps(self.login_header),
+                                        content_type='application/json')
+        user_token = json.loads(user_login.get_data(as_text=True))
+        token = user_token['access_token']
+        self.user_header = {"Authorization": "Bearer "+token}
 
     def tearDown(self):
         db.drop_tables()
