@@ -3,7 +3,7 @@ class Config(object):
     """Parent configuration class."""
     DEBUG = False
     CSRF_ENABLED = True #Cross-Site Request Forgery
-    SECRET_KEY = os.getenv('SECRET_KEY')
+    SECRET_KEY = os.getenv('SECRET_KEY') or "asdfg"
     DATABASE_URI=os.getenv('DATABASE_URI')
     PROPAGATE_EXCEPTIONS=True
 

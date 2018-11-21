@@ -17,6 +17,7 @@ class UserModel:
         """method that allows user to register"""
         try:
             user = self.exists(self.username)
+            
             if not user:
                 db.cursor.execute("INSERT INTO users (email,username,password,admin,date_created) \
                                     VALUES (%s, %s, %s, %s,%s)", (self.email, self.username,
@@ -28,10 +29,10 @@ class UserModel:
             return {"Message": e}
 
     @staticmethod
-    def get_single_user(user_id):
+    def get_single_user(email):
         """method that returns a single user by their id"""
-        db.cursor.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
-        user = db.cursor.fetchall()
+        db.cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+        user = db.cursor.fetchone()
         return user
 
     @staticmethod
@@ -40,12 +41,14 @@ class UserModel:
         db.cursor.execute("SELECT * FROM users ORDER BY user_id")
         users = db.cursor.fetchall()
         data = []
+
         for k, v in enumerate(users):
             user_id, username, password, email, admin, date_created = v
             user = {
 
                 "user_id": user_id,
                 "username": username,
+                "password":password,
                 "email": email,
                 "admin": admin,
                 "date_created": date_created
@@ -65,5 +68,6 @@ class UserModel:
         db.cursor.execute(
             "SELECT * FROM users WHERE username = %s", (username,))
         user = db.cursor.fetchone()
+
         if user:
-            return True
+            return user

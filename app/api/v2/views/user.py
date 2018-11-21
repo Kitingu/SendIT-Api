@@ -1,20 +1,20 @@
-from flask_restplus import Resource, Namespace, fields
+from flask_restplus import Resource, Namespace, fields, reqparse
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import request
-from app.api.utils.parcel_validator import UserSchema
+from flask_jwt_extended import create_access_token
+from app.api.utils.parcel_validator import UserSchema, LoginParser
 from ..models.user_model import UserModel
 from marshmallow import post_load
 
-v2_user = Namespace('users')
-new_user = v2_user.model('Users', {'email': fields.String('email@example.com'),
-                                   'username': fields.String('test_user'),
-                                   'password': fields.String('test_pass'),
-                                   'confirm_password': fields.String('test_pass')
-
+v2_user = Namespace("users")
+new_user = v2_user.model("Users", {"email": fields.String("email@example.com"),
+                                   "username": fields.String("test_user"),
+                                   "password": fields.String("test_pass"),
+                                   "confirm_password": fields.String("test_pass")
                                    })
 
-user_login = v2_user.model('Login', {'email': fields.String('email@example.com'),
-                                     'password': fields.String('test_pass')})
+user_login = v2_user.model("Login", {"email": fields.String("email@example.com"),
+                                     "password": fields.String("test_pass")})
 
 
 class User(Resource):
@@ -23,25 +23,47 @@ class User(Resource):
     def post(self):
         """route for user registration"""
         if not request.is_json:
-            return {"msg": "Missing JSON in request"}, 400
+            return {"Message": "Missing user details or invalid input format"}, 400
         data = v2_user.payload
         schema = UserSchema()
         result = schema.load(data)
         errors = result.errors
-        error_types = ['username', 'email', 'password']
+        error_types = ["username", "email", "password"]
+
         for e in error_types:
             if e in errors.keys():
-                return {'message': errors[e][0]}, 400
-        hashed_pass = generate_password_hash(data['password'])
-        # new_user = UserModel.get_single_user(data['email'])
-        new_user = UserModel.exists(data['username'])
+                return {"message": errors[e][0]}, 400
+        hashed_pass = generate_password_hash(data["password"])
+        new_user = UserModel.exists(data["username"])
+
         if new_user:
             return "user with username: {} already exists".format(data["email"]), 409
-        if check_password_hash(hashed_pass, data['confirm_password']):
-            user = UserModel(data['email'], data['username'], hashed_pass)
+
+        if check_password_hash(hashed_pass, data["confirm_password"]):
+            user = UserModel(data["email"], data["username"], hashed_pass)
             user.create_user()
             return {"message": "User registered successfully"}, 201
         return {"error": "passwords do not match"}, 401
 
 
-v2_user.add_resource(User, '', strict_slashes=False)
+class Login(Resource):
+    @v2_user.expect(user_login)
+    def post(self):
+        if not request.is_json:
+            return {"Message": "Missing user details or invalid input format"}, 400
+        data = LoginParser.parser.parse_args()
+        email = str(data['email'])
+        password = str(data['password'])
+
+        user = [user for user in UserModel.get_all_users() if user['email'] == email]
+        if user:
+            if check_password_hash(user[0]['password'], password):
+                access_token = create_access_token(identity=user[0]['user_id'])
+                return {"access_token": access_token}, 200
+            return {"msg": "Invalid email or password"}, 401
+
+        return "user does not exist", 400
+
+
+v2_user.add_resource(User, "", strict_slashes=False)
+v2_user.add_resource(Login, "/login", strict_slashes=False)
