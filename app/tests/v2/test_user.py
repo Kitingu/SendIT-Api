@@ -18,13 +18,6 @@ class TestUser(BaseTest):
 
     def test_double_registration(self):
         """test that user can't be registered twice"""
-        resp = self.client.post("/api/v1/users", data=json.dumps(self.test_user),
-                                content_type="application/json")
-        self.assertEqual(resp.status_code, 201)
-        resp = self.client.post("/api/v1/users", data=json.dumps(self.test_user),
-                                content_type="application/json")
-        self.assertEqual(resp.status_code, 409)
-        self.assertIn("already exists", str(resp.data))
         resp = self.client.post('/api/v2/users', data=json.dumps(self.test_user),
                                 content_type='application/json')
         self.assertEqual(resp.status_code, 201)

@@ -5,7 +5,7 @@ import datetime
 class OrderModel:
     """blueprint for creating a parcel delivery order"""
 
-    def __init__(self, sender_name,user_id, receiver_name, receiver_contact, weight, pickup_location, destination):
+    def __init__(self, sender_name, user_id, receiver_name, receiver_contact, weight, pickup_location, destination):
         """function to create parcel orders """
 
         price = 50 * weight
@@ -30,7 +30,7 @@ class OrderModel:
                 current_location,destination,price,status,time_created)
                 VALUES(%s, %s, %s, %s, %s,%s, %s, %s, %s,%s,%s) 
                 """,
-                (self.sender_name, self.user_id,self.receiver_name, self.receiver_contact, self.weight,
+                (self.sender_name, self.user_id, self.receiver_name, self.receiver_contact, self.weight,
                  self.pickup_location, self.current_location, self.destination, self.price,
                  self.status, self.time_created)
             )
@@ -109,12 +109,12 @@ class OrderModel:
             return {"Message": e}
 
     @classmethod
-    def update_destination(cls, parcel_id, destination):
+    def update_destination(cls, parcel_id, destination, user_id):
         """change order destination"""
         order = cls.cancelled_or_delivered(parcel_id)
         if order:
-            db.cursor.execute("""UPDATE parcels SET destination =%s WHERE parcel_id = %s""", (destination,
-                                                                                              parcel_id))
+            db.cursor.execute("""UPDATE parcels SET destination =%s WHERE parcel_id = %s AND user_id = %s""",
+                              (destination, parcel_id,user_id))
             db.commit()
             return {"message": "order updated successfully"}
         return {"order is either cancelled or already delivered"}
