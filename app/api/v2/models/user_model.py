@@ -17,6 +17,7 @@ class UserModel:
         """method that allows user to register"""
         try:
             user = self.exists(self.username)
+            
             if not user:
                 db.cursor.execute("INSERT INTO users (email,username,password,admin,date_created) \
                                     VALUES (%s, %s, %s, %s,%s)", (self.email, self.username,
@@ -40,6 +41,7 @@ class UserModel:
         db.cursor.execute("SELECT * FROM users ORDER BY user_id")
         users = db.cursor.fetchall()
         data = []
+
         for k, v in enumerate(users):
             user_id, username, password, email, admin, date_created = v
             user = {
@@ -65,5 +67,6 @@ class UserModel:
         db.cursor.execute(
             "SELECT * FROM users WHERE username = %s", (username,))
         user = db.cursor.fetchone()
+
         if user:
             return True

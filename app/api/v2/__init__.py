@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_restplus import Api
 from .views.user import v2_user
 
-v2_blueprint = Blueprint('v2_blueprint', __name__,url_prefix='/api/v2')
+v2_blueprint = Blueprint("v2_blueprint", __name__,url_prefix="/api/v2")
 v2_api = Api(v2_blueprint,
              title="SendIT",
              version="1",
