@@ -9,11 +9,18 @@ class BaseTest(unittest.TestCase):
     """ this is a class that initialises test data for all the test"""
 
     def setUp(self):
+        """method called when every test is running"""
         self.app = create_app(app_config["testing"])
         self.client = self.app.test_client()
         self.test_user = {
             "email": "asdf@gmail.com",
             "username": "ben",
+            "password": "@Ha1_pass",
+            "confirm_password": "@Ha1_pass"
+        }
+        self.test_user1 = {
+            "email": "bendeh@gmail.com",
+            "username": "bendeh",
             "password": "@Ha1_pass",
             "confirm_password": "@Ha1_pass"
         }
@@ -39,17 +46,47 @@ class BaseTest(unittest.TestCase):
             "email": "as@gmail.com",
             "password": "@Ha1_pass",
         }
+        self.login_header = {
+            "email": "bendeh@gmail.com",
+            "password": "@Ha1_pass",
+        }
 
         self.invalid_login = {
             "email": "@gmail.com",
             "password": "",
+        }
+        self.test_order = {
+            "sender_name": "benedt",
+            "receiver_name": "abdigg",
+            "receiver_contact": "ben@gmail.com",
+            "weight": 10,
+            "pickup_location": "kisumu",
+            "destination": "kakamega"
+        }
+        self.invalid_order = {
+            "sender_name": "bt",
+            "receiver_name": "a",
+            "receiver_contact": "ben@gmail.com",
+            "weight": 10,
+            "pickup_location": "kisumu",
+            "destination": "kakamega"
         }
         self.update_order = {"destination": "mathare"}
         self.invalid_update = {"destination": ""}
         self.cancel_order = {"status": "cancel"}
         self.invalid_cancel_status = {"ghvdshgcs": ""}
 
+        user_response = self.client.post('/api/v2/auth/signup', data=json.dumps(self.test_user1),
+                                         content_type='application/json')
+        user_login = self.client.post('/api/v2/auth/login', data=json.dumps(self.login_header),
+                                      content_type='application/json')
+        user_token = json.loads(user_login.get_data(as_text=True))
+        token = user_token['access_token']
+
+        self.user_header = {"Authorization": "Bearer " + token}
+
     def tearDown(self):
+        """delete all the tables"""
         db.drop_tables()
 
 

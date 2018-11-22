@@ -10,7 +10,7 @@ def create_tables():
                     user_id SERIAL PRIMARY KEY,
                     username VARCHAR(140) UNIQUE NOT NULL,
                     password VARCHAR(140) NOT NULL,
-                    email VARCHAR ,
+                    email VARCHAR UNIQUE NOT NULL ,
                     admin BOOL NOT NULL,
                     date_created TIMESTAMP 
                 )

@@ -1,8 +1,9 @@
 from flask import Blueprint
 from flask_restplus import Api
 from .views.user import v2_user
+from .views.orders import v2_order
 
-v2_blueprint = Blueprint("v2_blueprint", __name__,url_prefix="/api/v2")
+v2_blueprint = Blueprint("v2_blueprint", __name__, url_prefix="/api/v2")
 authorizations = {
     "apikey": {
         "type": "apiKey",
@@ -18,3 +19,4 @@ v2_api = Api(v2_blueprint,
              contact_email="benlegendj@gmail.com")
 
 v2_api.add_namespace(v2_user)
+v2_api.add_namespace(v2_order)

@@ -17,7 +17,7 @@ class UserModel:
         """method that allows user to register"""
         try:
             user = self.exists(self.username)
-            
+
             if not user:
                 db.cursor.execute("INSERT INTO users (email,username,password,admin,date_created) \
                                     VALUES (%s, %s, %s, %s,%s)", (self.email, self.username,
@@ -25,8 +25,8 @@ class UserModel:
                 db.commit()
                 return {"message": "user registered successfully"}
             return {"error": "user already exists"}
-        except Exception as e:
-            return {"Message": e}
+        except Exception as error:
+            return {"Message": error}
 
     @staticmethod
     def get_single_user(email):
@@ -42,13 +42,13 @@ class UserModel:
         users = db.cursor.fetchall()
         data = []
 
-        for k, v in enumerate(users):
-            user_id, username, password, email, admin, date_created = v
+        for keys, values in enumerate(users):
+            user_id, username, password, email, admin, date_created = values
             user = {
 
                 "user_id": user_id,
                 "username": username,
-                "password":password,
+                "password": password,
                 "email": email,
                 "admin": admin,
                 "date_created": date_created
@@ -65,8 +65,7 @@ class UserModel:
     @classmethod
     def exists(cls, username):
         """method that checks if a user already exists"""
-        db.cursor.execute(
-            "SELECT * FROM users WHERE username = %s", (username,))
+        db.cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
         user = db.cursor.fetchone()
 
         if user:
