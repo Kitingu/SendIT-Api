@@ -16,15 +16,15 @@ def validate_weight(weight):
 
 
 def validate_password(password):
-    if not re.match('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$])', password):
-        raise ValidationError("please should provide a strong password")
+    if not re.match('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$<>~$%^&*()_+])', password):
+        raise ValidationError("password should at least have an uppercase,lowercase,number and a special character")
 
 
 class ParcelSchema(Schema):
     sender_name = fields.String(required=True, validate=validate_length)
     receiver_name = fields.String(required=True, validate=validate_length)
     receiver_contact = fields.Email(required=True)
-    weight = fields.Integer(required=True, validate=validate_weight)
+    weight = fields.Int(required=True, validate=validate_weight)
     pickup_location = fields.String(required=True, validate=validate_length)
     destination = fields.String(required=True, validate=validate_length)
 

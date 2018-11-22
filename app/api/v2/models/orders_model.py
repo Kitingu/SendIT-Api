@@ -8,12 +8,12 @@ class OrderModel:
     def __init__(self, sender_name, user_id, receiver_name, receiver_contact, weight, pickup_location, destination):
         """function to create parcel orders """
 
-        price = 50 * weight
+        price = 50 * int(weight)
         self.sender_name = sender_name,
         self.user_id = user_id
         self.receiver_name = receiver_name,
         self.receiver_contact = receiver_contact,
-        self.weight = weight,
+        self.weight = int(weight),
         self.pickup_location = pickup_location,
         self.current_location = pickup_location,
         self.destination = destination,
@@ -61,7 +61,7 @@ class OrderModel:
                 "destination": destination,
                 "price": price,
                 "status": status,
-                "time_created": time_created
+                "time_created": str(time_created)
             }
             data.append(parcel)
         return data
