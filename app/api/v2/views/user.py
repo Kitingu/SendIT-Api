@@ -1,9 +1,10 @@
 from flask_restplus import Resource, Namespace, fields, reqparse
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import request
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from app.api.utils.parcel_validator import UserSchema, LoginParser
 from ..models.user_model import UserModel
+from ..models.orders_model import OrderModel
 from marshmallow import post_load
 
 v2_user = Namespace("users")
@@ -65,5 +66,9 @@ class Login(Resource):
         return "user does not exist", 400
 
 
+
+
+
 v2_user.add_resource(User, "", strict_slashes=False)
 v2_user.add_resource(Login, "/login", strict_slashes=False)
+

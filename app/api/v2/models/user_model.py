@@ -65,8 +65,7 @@ class UserModel:
     @classmethod
     def exists(cls, username):
         """method that checks if a user already exists"""
-        db.cursor.execute(
-            "SELECT * FROM users WHERE username = %s", (username,))
+        db.cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
         user = db.cursor.fetchone()
 
         if user:

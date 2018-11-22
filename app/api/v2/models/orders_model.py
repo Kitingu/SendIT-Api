@@ -19,7 +19,7 @@ class OrderModel:
         self.destination = destination,
         self.price = 'Ksh' + str(price),
         self.status = "on-transit"
-        self.time_created = datetime.datetime.now()
+        self.time_created = datetime.datetime.utcnow()
 
     def create_order(self):
         """method for creating a parcel delivery order"""
@@ -75,15 +75,16 @@ class OrderModel:
             "SELECT * FROM parcels WHERE parcel_id = %s ", (order_id,))
         parcels = db.cursor.fetchone()
         my_parcel = {"parcel_id": parcels[0],
-                     "sender_name": parcels[1],
-                     "receiver_name": parcels[2],
-                     "receiver_contact": parcels[3],
-                     "weight": parcels[4],
-                     "pickup_location": parcels[5],
-                     "current_location": parcels[6],
-                     "destination": parcels[7],
-                     "price": parcels[8],
-                     "status": parcels[9],
+                     "sender_id":parcels[1],
+                     "sender_name": parcels[2],
+                     "receiver_name": parcels[3],
+                     "receiver_contact": parcels[4],
+                     "weight": parcels[5],
+                     "pickup_location": parcels[6],
+                     "current_location": parcels[7],
+                     "destination": parcels[8],
+                     "price": parcels[9],
+                     "status": parcels[10],
                      }
         return my_parcel
 
@@ -94,14 +95,13 @@ class OrderModel:
             "DELETE from parcels WHERE order_id = %s ", (parcel_id,))
 
     @classmethod
-    def cancel_order(cls, parcel_id):
+    def cancel_order(cls, parcel_id,user_id):
         """cancel an order only if its not delivered"""
         try:
             order = cls.cancelled_or_delivered(parcel_id)
             if order:
-                db.cursor.execute("UPDATE parcels SET status=%s WHERE parcel_id = %s",
-                                  ('cancelled',
-                                   parcel_id))
+                db.cursor.execute("UPDATE parcels SET status=%s WHERE parcel_id = %s and user_id=%s",
+                                  ('cancelled', parcel_id,user_id))
                 db.commit()
                 return {"message": "order cancelled successfully"}
             return {"message": "order is either cancelled or already delivered"}
@@ -149,12 +149,16 @@ class OrderModel:
         if order:
             return True
 
-    @classmethod
-    def get_by_specific_user(cls, user_id):
+    @staticmethod
+    def get_by_specific_user(user_id):
         """method for getting orders made by a specific user"""
-        try:
-            db.cursor.execute(
-                "SELECT * FROM parcels WHERE user_id = %s ", (user_id))
-            db.cursor.dictfetchall()
-        except Exception as e:
-            return {"Message": e}
+        db.cursor.execute("SELECT * FROM parcels WHERE user_id = %s", (user_id,))
+        order = db.cursor.fetchall()
+        return order
+
+    @staticmethod
+    def get_by_user(user_id):
+        """method for getting orders made by a specific user"""
+        db.cursor.execute("SELECT * FROM parcels WHERE user_id = %s", (user_id,))
+        order = db.cursor.fetchall()
+        return order
