@@ -1,10 +1,11 @@
 from flask_restplus import Resource, Namespace, fields, reqparse
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import request
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity,get_raw_jwt
 from app.api.utils.parcel_validator import UserSchema, LoginParser
 from ..models.user_model import UserModel
-from ..models.orders_model import OrderModel
+from app.api.v2.views import blacklist
+
 from marshmallow import post_load
 
 v2_user = Namespace("users")
@@ -50,6 +51,7 @@ class User(Resource):
 class Login(Resource):
     @v2_user.expect(user_login)
     def post(self):
+        """"log in users using email and password"""
         if not request.is_json:
             return {"Message": "Missing user details or invalid input format"}, 400
         data = LoginParser.parser.parse_args()
@@ -65,10 +67,17 @@ class Login(Resource):
 
         return "user does not exist", 400
 
-
-
+class Logout(Resource):
+    """logout users"""
+    @v2_user.doc(security='apikey')
+    @jwt_required
+    def post(self):
+        """Log out a given user by blacklisting user's token"""
+        jti = get_raw_jwt()['jti']
+        blacklist.add(jti)
+        return ({'message': "Successfully logged out"}), 200
 
 
 v2_user.add_resource(User, "", strict_slashes=False)
 v2_user.add_resource(Login, "/login", strict_slashes=False)
-
+v2_user.add_resource(Logout,'/logout',strict_slashes = False)

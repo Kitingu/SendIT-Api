@@ -82,8 +82,7 @@ class Cancel(Resource):
 
         if parcel:
             user_id = get_jwt_identity()
-            OrderModel.cancel_order(parcel_id,user_id)
-            return {"message": "success", "new details": OrderModel.get_single_order(parcel_id)}
+            return OrderModel.cancel_order(parcel_id,user_id)
         return {"error": "parcel does not exist"}, 404
 
 
