@@ -8,7 +8,7 @@ from app.api.v2.views import blacklist
 
 from marshmallow import post_load
 
-v2_user = Namespace("users")
+v2_user = Namespace("auth")
 new_user = v2_user.model("Users", {"email": fields.String("email@example.com"),
                                    "username": fields.String("test_user"),
                                    "password": fields.String("test_pass"),
@@ -78,6 +78,6 @@ class Logout(Resource):
         return ({'message': "Successfully logged out"}), 200
 
 
-v2_user.add_resource(User, "", strict_slashes=False)
+v2_user.add_resource(User, "/signup", strict_slashes=False)
 v2_user.add_resource(Login, "/login", strict_slashes=False)
 v2_user.add_resource(Logout,'/logout',strict_slashes = False)
