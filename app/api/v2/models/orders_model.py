@@ -75,7 +75,7 @@ class OrderModel:
             "SELECT * FROM parcels WHERE parcel_id = %s ", (order_id,))
         parcels = db.cursor.fetchone()
         my_parcel = {"parcel_id": parcels[0],
-                     "sender_id":parcels[1],
+                     "sender_id": parcels[1],
                      "sender_name": parcels[2],
                      "receiver_name": parcels[3],
                      "receiver_contact": parcels[4],
@@ -95,26 +95,28 @@ class OrderModel:
             "DELETE from parcels WHERE order_id = %s ", (parcel_id,))
 
     @classmethod
-    def cancel_order(cls, parcel_id,user_id):
+    def cancel_order(cls, parcel_id, user_id):
         """cancel an order only if its not delivered"""
         try:
             order = cls.cancelled_or_delivered(parcel_id)
+
             if order:
                 db.cursor.execute("UPDATE parcels SET status=%s WHERE parcel_id = %s and user_id=%s",
-                                  ('cancelled', parcel_id,user_id))
+                                  ('cancelled', parcel_id, user_id))
                 db.commit()
                 return {"message": "order cancelled successfully"}
             return {"message": "order is either cancelled or already delivered"}
-        except Exception as e:
-            return {"Message": e}
+        except Exception as error:
+            return {"message": error}
 
     @classmethod
     def update_destination(cls, parcel_id, destination, user_id):
         """change order destination"""
         order = cls.cancelled_or_delivered(parcel_id)
+
         if order:
             db.cursor.execute("""UPDATE parcels SET destination =%s WHERE parcel_id = %s AND user_id = %s""",
-                              (destination, parcel_id,user_id))
+                              (destination, parcel_id, user_id))
             db.commit()
             return {"message": "order updated successfully"}
         return {"order is either cancelled or already delivered"}
@@ -123,6 +125,7 @@ class OrderModel:
     def change_location(cls, parcel_id, current_location):
         """ function that allows the admin user to change current location"""
         order = cls.cancelled_or_delivered(parcel_id)
+
         if order:
             db.cursor.execute("""UPDATE parcels SET current_location =%s WHERE parcel_id = %s""", (current_location,
                                                                                                    parcel_id))
@@ -135,10 +138,11 @@ class OrderModel:
         try:
             db.cursor.execute(
                 "SELECT * FROM parcels WHERE parcel_id = %s ", (parcel_id,))
+
             if db.cursor.fetchone() is not None:
                 return True
-        except Exception as e:
-            return {"Message": e}
+        except Exception as error:
+            return {"Message": error}
 
     @staticmethod
     def cancelled_or_delivered(parcel_id):
@@ -150,14 +154,7 @@ class OrderModel:
             return True
 
     @staticmethod
-    def get_by_specific_user(user_id):
-        """method for getting orders made by a specific user"""
-        db.cursor.execute("SELECT * FROM parcels WHERE user_id = %s", (user_id,))
-        order = db.cursor.fetchall()
-        return order
-
-    @staticmethod
-    def get_by_user(user_id):
+    def get_all_orders_by_user(user_id):
         """method for getting orders made by a specific user"""
         db.cursor.execute("SELECT * FROM parcels WHERE user_id = %s", (user_id,))
         order = db.cursor.fetchall()

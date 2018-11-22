@@ -2,7 +2,7 @@ import os
 import psycopg2
 from instance.config import app_config
 
-env = os.getenv('FLASK_ENV')
+env = os.getenv("FLASK_ENV")
 url = app_config[env].DATABASE_URI
 
 

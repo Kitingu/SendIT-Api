@@ -9,6 +9,7 @@ class BaseTest(unittest.TestCase):
     """ this is a class that initialises test data for all the test"""
 
     def setUp(self):
+        """method called when every test is running"""
         self.app = create_app(app_config["testing"])
         self.client = self.app.test_client()
         self.test_user = {
@@ -45,7 +46,7 @@ class BaseTest(unittest.TestCase):
             "email": "as@gmail.com",
             "password": "@Ha1_pass",
         }
-        self.login_header={
+        self.login_header = {
             "email": "bendeh@gmail.com",
             "password": "@Ha1_pass",
         }
@@ -76,15 +77,16 @@ class BaseTest(unittest.TestCase):
         self.invalid_cancel_status = {"ghvdshgcs": ""}
 
         user_response = self.client.post('/api/v2/auth/signup', data=json.dumps(self.test_user1),
-                                           content_type='application/json')
+                                         content_type='application/json')
         user_login = self.client.post('/api/v2/auth/login', data=json.dumps(self.login_header),
-                                        content_type='application/json')
+                                      content_type='application/json')
         user_token = json.loads(user_login.get_data(as_text=True))
         token = user_token['access_token']
 
-        self.user_header = {"Authorization": "Bearer "+token}
+        self.user_header = {"Authorization": "Bearer " + token}
 
     def tearDown(self):
+        """delete all the tables"""
         db.drop_tables()
 
 

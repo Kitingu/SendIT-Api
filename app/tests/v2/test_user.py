@@ -57,10 +57,8 @@ class TestUser(BaseTest):
         self.assertIn("token", str(resp.data))
 
     def test_logout(self):
+        """test that user can be able to log out"""
         resp = self.client.post('/api/v2/auth/logout', data=json.dumps(self.login),
-                                content_type='application/json',headers=self.user_header)
+                                content_type='application/json', headers=self.user_header)
         self.assertEqual(resp.status_code, 200)
         self.assertIn("Successfully logged out", str(resp.data))
-
-
-

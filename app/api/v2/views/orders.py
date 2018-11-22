@@ -26,6 +26,7 @@ class Order(Resource):
     @v2_order.expect(new_order)
     @post_load
     def post(self):
+        """route for creating a parcel delivery order"""
         if not request.is_json:
             return {"error ": "Missing user details or invalid input format"}, 400
         data = v2_order.payload
@@ -34,9 +35,9 @@ class Order(Resource):
         errors = result.errors
         error_types = ['sender_name', 'receiver_name', 'receiver_contact', 'weight', 'pickup_location', 'destination']
 
-        for e in error_types:
-            if e in errors.keys():
-                return {'message': errors[e][0]}, 400
+        for error in error_types:
+            if error in errors.keys():
+                return {'message': errors[error][0]}, 400
         user_id = get_jwt_identity()
         if user_id:
             order = OrderModel(data['sender_name'], user_id, data['receiver_name'], data['receiver_contact'],
@@ -45,7 +46,7 @@ class Order(Resource):
                                data['destination'])
             order.create_order()
             return {"success": "order submitted successfully",
-                    "Order details": data}, 201
+                    "order details": data}, 201
 
         return {"message": "please login"}
 
@@ -69,10 +70,12 @@ class Destination(Resource):
 
         if user_id:
             order = OrderModel.check_exists(parcel_id)
+
             if order:
                 return OrderModel.update_destination(parcel_id, destination, user_id)
-            return {"error":"parcel does not exist"},404
-        return {"error":"user does not exist"}
+            return {"error": "parcel does not exist"}, 404
+        return {"error": "user does not exist"}
+
 
 class Cancel(Resource):
     @jwt_required
@@ -82,10 +85,10 @@ class Cancel(Resource):
 
         if parcel:
             user_id = get_jwt_identity()
-            return OrderModel.cancel_order(parcel_id,user_id)
+            return OrderModel.cancel_order(parcel_id, user_id)
         return {"error": "parcel does not exist"}, 404
 
 
 v2_order.add_resource(Order, "", strict_slashes=False)
-v2_order.add_resource(Destination, '/<int:parcel_id>/destination', strict_slashes=False)
-v2_order.add_resource(Cancel, '/<int:parcel_id>/cancel', strict_slashes=False)
+v2_order.add_resource(Destination, "/<int:parcel_id>/destination", strict_slashes=False)
+v2_order.add_resource(Cancel, "/<int:parcel_id>/status", strict_slashes=False)
