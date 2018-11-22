@@ -49,3 +49,7 @@ class TestParcels(BaseTest):
                                    headers=self.user_header)
         self.assertEqual(response.status_code, 200)
         self.assertIn("order cancelled successfully", str(response.data))
+
+    def test_get_all_orders(self):
+        resp = self.client.get('/api/v1/parcels', headers=self.user_header)
+        self.assertEqual(resp.status_code, 200)

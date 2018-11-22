@@ -37,7 +37,7 @@ class Order(Resource):
 
         for error in error_types:
             if error in errors.keys():
-                return {'message': errors[error][0]}, 400
+                return {'message': {error:errors[error][0]}}, 400
         user_id = get_jwt_identity()
         if user_id:
             order = OrderModel(data['sender_name'], user_id, data['receiver_name'], data['receiver_contact'],
@@ -49,7 +49,11 @@ class Order(Resource):
                     "order details": data}, 201
 
         return {"message": "please login"}
-
+    @jwt_required
+    def get(self):
+        """method for getting all orders available in the database"""
+        orders = OrderModel.get_all_orders()
+        return orders,200
 
 class Destination(Resource):
     @jwt_required
