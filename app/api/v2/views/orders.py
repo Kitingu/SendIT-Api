@@ -76,7 +76,8 @@ class Destination(Resource):
             order = OrderModel.check_exists(parcel_id)
 
             if order:
-                return OrderModel.update_destination(parcel_id, destination, user_id)
+                OrderModel.update_destination(parcel_id, destination, user_id)
+                return OrderModel.get_single_order(parcel_id)
             return {"error": "parcel does not exist"}, 404
         return {"error": "user does not exist"}
 
@@ -85,7 +86,7 @@ class Cancel(Resource):
     @jwt_required
     def put(self, parcel_id):
         """route for cancelling an order before delivery"""
-        parcel = OrderModel.get_single_order(parcel_id)
+        parcel = OrderModel.check_exists(parcel_id)
 
         if parcel:
             user_id = get_jwt_identity()

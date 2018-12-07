@@ -78,12 +78,12 @@ class BaseTest(unittest.TestCase):
 
         user_response = self.client.post('/api/v2/auth/signup', data=json.dumps(self.test_user1),
                                          content_type='application/json')
+
         user_login = self.client.post('/api/v2/auth/login', data=json.dumps(self.login_header),
                                       content_type='application/json')
-        user_token = json.loads(user_login.get_data(as_text=True))
-        token = user_token['access_token']
-
-        self.user_header = {"Authorization": "Bearer " + token}
+        user_token = json.loads(user_login.get_data().decode('utf-8'))
+        token = user_token ['access_token']
+        self.user_header = {"Authorization": "Bearer {}".format(token)}
 
     def tearDown(self):
         """delete all the tables"""

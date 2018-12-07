@@ -29,6 +29,7 @@ class TestParcels(BaseTest):
         self.assertEqual(resp.status_code, 201)
         response = self.client.put('/api/v2/parcels/1/destination', data=json.dumps(self.update_order),
                                    content_type='application/json', headers=self.user_header)
+        print(response.data)
         self.assertEqual(response.status_code, 200)
 
     def test_change_destination_with_invalid_details(self):
@@ -47,6 +48,7 @@ class TestParcels(BaseTest):
         self.assertEqual(resp.status_code, 201)
         response = self.client.put("/api/v2/parcels/1/status", content_type="application/json",
                                    headers=self.user_header)
+        print(resp.data)
         self.assertEqual(response.status_code, 200)
         self.assertIn("order cancelled successfully", str(response.data))
 
