@@ -12,7 +12,7 @@ from manage import db
 config_name = os.getenv("FLASK_ENV")
 
 
-def create_app(config=app_config[config_name]):
+def create_app(config=config_name):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config)
     jwt = JWTManager(app)
@@ -20,7 +20,6 @@ def create_app(config=app_config[config_name]):
     app.config['JWT_BLACKLIST_ENABLED'] = True
     app.register_blueprint(v1_blueprint, url_prefix="/api/v1")
     app.register_blueprint(v2_blueprint, url_prefix="/api/v2")
-    # db.drop_tables()
     create_tables()
     api = v2_api
     jwt._set_error_handler_callbacks(api)

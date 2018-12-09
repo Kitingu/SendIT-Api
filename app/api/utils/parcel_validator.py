@@ -58,3 +58,19 @@ class DestinationParser:
                         required=True,
                         location='json',
                         help='input a valid destination')
+
+class LocationParser:
+    parser = reqparse.RequestParser()
+    parser.add_argument('location',
+                        type=str,
+                        required=True,
+                        location='json',
+                        help='input a valid location')
+
+class StatusParser:
+    parser = reqparse.RequestParser()
+    parser.add_argument('status',
+                        type=str,
+                        required=True,
+                        location='json',
+                        help='status can either be cancelled or delivered')

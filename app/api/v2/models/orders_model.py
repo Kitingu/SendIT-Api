@@ -1,6 +1,6 @@
 from db_init import db
 import datetime
-
+import psycopg2.extras
 
 class OrderModel:
     """blueprint for creating a parcel delivery order"""
@@ -40,58 +40,32 @@ class OrderModel:
         except Exception as e:
              return {"Message": e}
 
-    @staticmethod
-    def get_all_orders():
+    @classmethod
+    def get_all_orders(cls):
         """ function that allows the user view all orders"""
         with db as connection:
-            cursor = connection.cursor()
+            cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
             cursor.execute("SELECT * FROM parcels ORDER BY parcel_id")
-            parcels = db.cursor.fetchall()
-            data = []
-            for k, v in enumerate(parcels):
-                parcel_id, sender_name, sender_id, receiver_name, receiver_contact, weight, pickup_location, \
-                current_location, destination, \
-                price, status, time_created = v
-                parcel = {
-                    "parcel_id": parcel_id,
-                    "sender_id": sender_id,
-                    "sender_name": sender_name,
-                    "receiver_name": receiver_name,
-                    "receiver_contact": receiver_contact,
-                    "weight": weight,
-                    "pickup_location": pickup_location,
-                    "current_location": current_location,
-                    "destination": destination,
-                    "price": price,
-                    "status": status,
-                    "time_created": str(time_created)
-                }
-                data.append(parcel)
-            return data
-
+            parcels = cursor.fetchall()
+            if parcels:
+                all_parcels = []
+                for parcel in parcels:
+                    parcel = cls.display_order(parcel)
+                    all_parcels.append(parcel)
+                return all_parcels
             return {"message": "no parcels available"}
 
-    @staticmethod
-    def get_single_order(order_id):
+    @classmethod
+    def get_single_order(cls,order_id):
         """function that allows user to get a single order"""
         with db as connection:
-            cursor = connection.cursor()
+            cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
             cursor.execute(
                 "SELECT * FROM parcels WHERE parcel_id = %s ", (order_id,))
-            parcels = cursor.fetchone()
-            my_parcel = {"parcel_id": parcels[0],
-                        "sender_id": parcels[1],
-                        "sender_name": parcels[2],
-                        "receiver_name": parcels[3],
-                        "receiver_contact": parcels[4],
-                        "weight": parcels[5],
-                        "pickup_location": parcels[6],
-                        "current_location": parcels[7],
-                        "destination": parcels[8],
-                        "price": parcels[9],
-                        "status": parcels[10],
-                        }
-            return my_parcel
+            parcel = cursor.fetchone()
+            if parcel:
+                return cls.display_order(parcel)
+            
 
     @classmethod
     def cancel_order(cls, parcel_id, user_id):
@@ -123,6 +97,19 @@ class OrderModel:
         return {"order is either cancelled or already delivered"}
 
     @classmethod
+    def change_status(cls, parcel_id, status):
+        """change order destination"""
+        order = cls.cancelled_or_delivered(parcel_id)
+
+        if order:
+            with db as connection:
+                cursor = connection.cursor()
+                cursor.execute("""UPDATE parcels SET status =%s WHERE parcel_id = %s """,
+                                (status, parcel_id))
+                return {"message": "order updated successfully"}
+        return {"order is either cancelled or already delivered"}
+
+    @classmethod
     def change_location(cls, parcel_id, current_location):
         """ function that allows the admin user to change current location"""
         order = cls.cancelled_or_delivered(parcel_id)
@@ -132,7 +119,7 @@ class OrderModel:
                 cursor = connection.cursor()
                 cursor.execute("""UPDATE parcels SET current_location =%s WHERE parcel_id = %s""", (current_location,
                                                                                                     parcel_id))
-                return {"message": cls.get_single_order(parcel_id)}
+            return {"message": cls.get_single_order(parcel_id)}
 
     @staticmethod
     def check_exists(parcel_id):
@@ -167,3 +154,30 @@ class OrderModel:
             cursor.execute("SELECT * FROM parcels WHERE user_id = %s", (user_id,))
             order = cursor.fetchall()
             return order
+
+    @staticmethod
+    def check_user(parcel_id):
+        """method for checking the owner of a parcel delivery order"""
+        with db as connection:
+            cursor = connection.cursor()
+            cursor.execute("SELECT user_id from parcels WHERE parcel_id = %s",(parcel_id,))
+            user_id = cursor.fetchone()
+            return user_id[0]
+
+    
+    @staticmethod
+    def display_order(order_payload):
+        payload = {"parcel_id": order_payload["parcel_id"],
+                   "user_id": order_payload["user_id"],
+                   "sender_name": order_payload["sender_name"],
+                   "receiver_name": order_payload["receiver_name"],
+                   "receiver_contact": order_payload["receiver_contact"],
+                   "weight": order_payload["weight"],
+                   "pickup_location": order_payload["pickup_location"],
+                   "current_location": order_payload["current_location"],
+                   "destination": order_payload["destination"],
+                   "price": order_payload["price"],
+                   "status": order_payload["status"],
+                   "time_created": order_payload["time_created"]
+                   }
+        return payload

@@ -36,15 +36,18 @@ class User(Resource):
                 return {"message": errors[error][0]}, 400
         hashed_pass = generate_password_hash(data["password"])
         new_user = UserModel.exists(data["username"])
+        mailexists = UserModel.mailexists(data["email"])
 
         if new_user:
             return "user with username: {} already exists".format(data["username"]), 409
-
+        if mailexists:
+            return "user with email: {} already exists".format(data["email"]), 409
         if check_password_hash(hashed_pass, data["confirm_password"]):
             user = UserModel(data["email"], data["username"], hashed_pass)
             user.create_user()
             return {"message": "User registered successfully"}, 201
         return {"error": "passwords do not match"}, 401
+
 
 
 class Login(Resource):
@@ -58,8 +61,11 @@ class Login(Resource):
         password = str(data['password'])
 
         user = [user for user in UserModel.get_all_users() if user['email'] == email]
+        print(user)
         if user:
+            print(user[0]['password'])
             if check_password_hash(user[0]['password'], password):
+                print(user[0]['password'])
                 access_token = create_access_token(identity=user[0]['user_id'])
                 return {"access_token": access_token}, 200
             return {"error": "Invalid email or password"}, 401
@@ -78,7 +84,16 @@ class Logout(Resource):
         blacklist.add(jti)
         return ({'message': "Successfully logged out"}), 200
 
+class GetUsers(Resource):
+    def get(self):
+        return UserModel.get_all_users()
+
+class GetSingleUser(Resource):
+    def get(self,username):
+        return UserModel.get_single_user(username)
 
 v2_user.add_resource(User, "/signup", strict_slashes=False)
 v2_user.add_resource(Login, "/login", strict_slashes=False)
 v2_user.add_resource(Logout, "/logout", strict_slashes=False)
+v2_user.add_resource(GetUsers, "", strict_slashes=False)
+v2_user.add_resource(GetSingleUser, "/<string:username>", strict_slashes=False)
