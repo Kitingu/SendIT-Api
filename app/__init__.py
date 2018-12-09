@@ -29,6 +29,7 @@ def create_app(config=config_name):
         return jsonify({"error": "page not not found"}), 404
 
     from app.api.v2.views import blacklist
+
     @jwt.token_in_blacklist_loader
     def check_if_token_in_blacklist(decrypted_token):
         jti = decrypted_token['jti']

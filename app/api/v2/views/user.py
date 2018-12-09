@@ -49,7 +49,6 @@ class User(Resource):
         return {"error": "passwords do not match"}, 401
 
 
-
 class Login(Resource):
     @v2_user.expect(user_login)
     def post(self):
@@ -60,12 +59,10 @@ class Login(Resource):
         email = str(data['email'])
         password = str(data['password'])
 
-        user = [user for user in UserModel.get_all_users() if user['email'] == email]
-        print(user)
+        user = [user for user in UserModel.get_all_users()
+                if user['email'] == email]
         if user:
-            print(user[0]['password'])
             if check_password_hash(user[0]['password'], password):
-                print(user[0]['password'])
                 access_token = create_access_token(identity=user[0]['user_id'])
                 return {"access_token": access_token}, 200
             return {"error": "Invalid email or password"}, 401
@@ -84,13 +81,16 @@ class Logout(Resource):
         blacklist.add(jti)
         return ({'message': "Successfully logged out"}), 200
 
+
 class GetUsers(Resource):
     def get(self):
         return UserModel.get_all_users()
 
+
 class GetSingleUser(Resource):
-    def get(self,username):
+    def get(self, username):
         return UserModel.get_single_user(username)
+
 
 v2_user.add_resource(User, "/signup", strict_slashes=False)
 v2_user.add_resource(Login, "/login", strict_slashes=False)
