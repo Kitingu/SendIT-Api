@@ -6,6 +6,7 @@ from app.api.utils.parcel_validator import UserSchema, LoginParser
 from ..models.user_model import UserModel
 from app.api.v2.views import blacklist
 from marshmallow import post_load
+from app.api.utils.admin import admin_required
 
 v2_user = Namespace("auth")
 new_user = v2_user.model("Users", {"email": fields.String("email@example.com"),
@@ -83,11 +84,15 @@ class Logout(Resource):
 
 
 class GetUsers(Resource):
+    @jwt_required
+    @admin_required
     def get(self):
         return UserModel.get_all_users()
 
 
 class GetSingleUser(Resource):
+    @jwt_required
+    @admin_required
     def get(self, username):
         return UserModel.get_single_user(username)
 

@@ -8,7 +8,7 @@ from .api.v2 import v2_blueprint
 from app.api.v2 import v2_api
 from flask_jwt_extended import JWTManager
 from manage import db
-
+from app.api.v2.models.user_model import Admin
 config_name = os.getenv("FLASK_ENV")
 
 
@@ -21,6 +21,7 @@ def create_app(config=config_name):
     app.register_blueprint(v1_blueprint, url_prefix="/api/v1")
     app.register_blueprint(v2_blueprint, url_prefix="/api/v2")
     create_tables()
+    Admin.create_admin()
     api = v2_api
     jwt._set_error_handler_callbacks(api)
 

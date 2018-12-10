@@ -65,7 +65,7 @@ class TestParcels(BaseTest):
         self.assertEqual(response.status_code, 404)
 
     def test_get_all_orders(self):
-        resp = self.client.get('/api/v2/parcels', headers=self.user_header)
+        resp = self.client.get('/api/v2/parcels', headers=self.admin_header)
         self.assertEqual(resp.status_code, 200)
 
     def test_get_single_order(self):
@@ -77,14 +77,13 @@ class TestParcels(BaseTest):
         resp = self.client.get('/api/v2/parcels/5', headers=self.user_header)
         self.assertEqual(resp.status_code, 404)
 
-
     def test_change_location(self):
         resp = self.client.post("/api/v2/parcels", data=json.dumps(self.test_order),
                                 content_type="application/json", headers=self.user_header)
         self.assertEqual(resp.status_code, 201)
         response = self.client.put("/api/v2/parcels/1/changelocation", data=json.dumps(self.changelocation),
-        content_type="application/json",headers=self.user_header)
+                                   content_type="application/json", headers=self.admin_header)
         self.assertEqual(response.status_code, 200)
         response = self.client.put("/api/v2/parcels/5/changelocation", data=json.dumps(self.changelocation),
-        content_type="application/json",headers=self.user_header)
+                                   content_type="application/json", headers=self.admin_header)
         self.assertEqual(response.status_code, 404)

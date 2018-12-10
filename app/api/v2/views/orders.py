@@ -5,6 +5,7 @@ from ..models.orders_model import OrderModel
 from marshmallow import post_load
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.api.utils.mailgun import Mailgun
+from app.api.utils.admin import admin_required
 v2_order = Namespace('parcels')
 new_order = v2_order.model('Orders', {
     'sender_name': fields.String(description="John Doe"),
@@ -57,6 +58,7 @@ class Order(Resource):
         return {"message": "please login"}
 
     @jwt_required
+    @admin_required
     def get(self):
         """method for getting all orders available in the database"""
         orders = OrderModel.get_all_orders()
@@ -123,6 +125,7 @@ class Cancel(Resource):
 
 class ChangeLocation(Resource):
     @jwt_required
+    @admin_required
     @v2_order.expect(location)
     def put(self, parcel_id):
         """route used to change the destination of a parcel delivery order"""
@@ -156,6 +159,7 @@ class ChangeLocation(Resource):
 
 class ChangeStatus(Resource):
     @jwt_required
+    @admin_required
     @v2_order.expect(order_status)
     def put(self, parcel_id):
         """route used to change the status of a parcel delivery order"""

@@ -29,6 +29,7 @@ class TestUser(BaseTest):
                                 content_type='application/json')
         self.assertEqual(resp.status_code, 409)
         self.assertIn("already exists", str(resp.data))
+
     def test_passwords_do_not_match(self):
         """Test if user passwords match or not"""
         resp = self.client.post('/api/v2/auth/signup', data=json.dumps(self.wrong_pass),
@@ -85,8 +86,8 @@ class TestUser(BaseTest):
     def test_get_users(self):
         self.client.post('/api/v2/auth/signup', data=json.dumps(self.test_user),
                          content_type='application/json')
-        resp = self.client.get('/api/v2/auth')
+        resp = self.client.get('/api/v2/auth', headers=self.admin_header)
         self.assertEqual(resp.status_code, 200)
-        response = self.client.get('/api/v2/auth/ben')
+        response = self.client.get('/api/v2/auth/ben',
+                                   headers=self.admin_header)
         self.assertEqual(response.status_code, 200)
-

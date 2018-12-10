@@ -60,6 +60,11 @@ class BaseTest(unittest.TestCase):
             "password": "@Ha1_pass",
         }
 
+        self.admin_logins = {
+            "email": "bendeh@yahoo.com",
+            "password": "asdfg",
+        }
+
         self.invalid_login = {
             "email": "@gmail.com",
             "password": "",
@@ -92,8 +97,15 @@ class BaseTest(unittest.TestCase):
         user_login = self.client.post('/api/v2/auth/login', data=json.dumps(self.login_header),
                                       content_type='application/json')
         user_token = json.loads(user_login.get_data().decode('utf-8'))
-        token = user_token ['access_token']
+        token = user_token['access_token']
         self.user_header = {"Authorization": "Bearer {}".format(token)}
+
+        admin_login = self.client.post('/api/v2/auth/login', data=json.dumps(self.admin_logins),
+                                      content_type='application/json')
+        admin_token = json.loads(admin_login.get_data().decode('utf-8'))
+        su_token = admin_token['access_token']
+        print(su_token)
+        self.admin_header = {"Authorization": "Bearer {}".format(su_token)}
 
     def tearDown(self):
         """delete all the tables"""
