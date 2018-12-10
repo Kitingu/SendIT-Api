@@ -25,6 +25,10 @@ class TestUser(BaseTest):
                                 content_type='application/json')
         self.assertEqual(resp.status_code, 409)
         self.assertIn("already exists", str(resp.data))
+        resp = self.client.post('/api/v2/auth/signup', data=json.dumps(self.test_user2),
+                                content_type='application/json')
+        self.assertEqual(resp.status_code, 409)
+        self.assertIn("already exists", str(resp.data))
 
     def test_passwords_do_not_match(self):
         """Test if user passwords match or not"""
@@ -62,3 +66,28 @@ class TestUser(BaseTest):
                                 content_type='application/json', headers=self.user_header)
         self.assertEqual(resp.status_code, 200)
         self.assertIn("Successfully logged out", str(resp.data))
+
+    def test_register_with_non_json(self):
+        resp = self.client.post("/api/v2/auth/signup", data=json.dumps(self.test_user),
+                                content_type="text")
+        self.assertEqual(resp.status_code, 400)
+        resp = self.client.post('/api/v2/auth/login', data=json.dumps(self.login),
+                                content_type='text')
+        self.assertEqual(resp.status_code, 400)
+
+    def test_login_with_incorrect_credentials(self):
+        self.client.post('/api/v2/auth/signup', data=json.dumps(self.test_user),
+                         content_type='application/json')
+        resp = self.client.post('/api/v2/auth/login', data=json.dumps(self.wrong_credentials),
+                                content_type='application/json')
+        self.assertEqual(resp.status_code, 401)
+        self.assertIn("Invalid email", str(resp.data))
+
+    def test_get_users(self):
+        self.client.post('/api/v2/auth/signup', data=json.dumps(self.test_user),
+                         content_type='application/json')
+        resp = self.client.get('/api/v2/auth', headers=self.admin_header)
+        self.assertEqual(resp.status_code, 200)
+        response = self.client.get('/api/v2/auth/ben',
+                                   headers=self.admin_header)
+        self.assertEqual(response.status_code, 200)

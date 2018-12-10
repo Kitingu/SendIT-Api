@@ -6,6 +6,7 @@ from app.api.utils.parcel_validator import UserSchema, LoginParser
 from ..models.user_model import UserModel
 from app.api.v2.views import blacklist
 from marshmallow import post_load
+from app.api.utils.admin import admin_required
 
 v2_user = Namespace("auth")
 new_user = v2_user.model("Users", {"email": fields.String("email@example.com"),
@@ -36,10 +37,12 @@ class User(Resource):
                 return {"message": errors[error][0]}, 400
         hashed_pass = generate_password_hash(data["password"])
         new_user = UserModel.exists(data["username"])
+        mailexists = UserModel.mailexists(data["email"])
 
         if new_user:
             return "user with username: {} already exists".format(data["username"]), 409
-
+        if mailexists:
+            return "user with email: {} already exists".format(data["email"]), 409
         if check_password_hash(hashed_pass, data["confirm_password"]):
             user = UserModel(data["email"], data["username"], hashed_pass)
             user.create_user()
@@ -57,7 +60,8 @@ class Login(Resource):
         email = str(data['email'])
         password = str(data['password'])
 
-        user = [user for user in UserModel.get_all_users() if user['email'] == email]
+        user = [user for user in UserModel.get_all_users()
+                if user['email'] == email]
         if user:
             if check_password_hash(user[0]['password'], password):
                 access_token = create_access_token(identity=user[0]['user_id'])
@@ -79,6 +83,22 @@ class Logout(Resource):
         return ({'message': "Successfully logged out"}), 200
 
 
+class GetUsers(Resource):
+    @jwt_required
+    @admin_required
+    def get(self):
+        return UserModel.get_all_users()
+
+
+class GetSingleUser(Resource):
+    @jwt_required
+    @admin_required
+    def get(self, username):
+        return UserModel.get_single_user(username)
+
+
 v2_user.add_resource(User, "/signup", strict_slashes=False)
 v2_user.add_resource(Login, "/login", strict_slashes=False)
 v2_user.add_resource(Logout, "/logout", strict_slashes=False)
+v2_user.add_resource(GetUsers, "", strict_slashes=False)
+v2_user.add_resource(GetSingleUser, "/<string:username>", strict_slashes=False)

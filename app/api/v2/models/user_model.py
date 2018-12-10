@@ -1,72 +1,123 @@
 from manage import db
 import datetime
+from werkzeug.security import generate_password_hash
+import psycopg2.extras
 
 
 class UserModel:
     """ A blueprint for creating users """
 
-    def __init__(self, email, username, password):
+    def __init__(self, email, username, password, admin=False, date_created=datetime.datetime.utcnow()):
         """initialize an instance of the user class"""
         self.email = email,
         self.username = username,
         self.password = password,
-        self.admin = False
-        self.date_created = datetime.datetime.utcnow()
+        self.admin = admin
+        self.date_created = date_created
 
     def create_user(self):
         """method that allows user to register"""
-        try:
-            user = self.exists(self.username)
-
+        user = self.exists(self.username)
+        with db as connection:
+            cursor = connection.cursor()
             if not user:
-                db.cursor.execute("INSERT INTO users (email,username,password,admin,date_created) \
-                                    VALUES (%s, %s, %s, %s,%s)", (self.email, self.username,
-                                                                  self.password, self.admin, self.date_created))
-                db.commit()
+                query = """INSERT INTO users (email,username,password,admin,date_created) 
+                                    VALUES (%s, %s, %s, %s,%s)"""
+                cursor.execute(query, (self.email, self.username, self.password,
+                                       self.admin, self.date_created))
                 return {"message": "user registered successfully"}
-            return {"error": "user already exists"}
-        except Exception as error:
-            return {"Message": error}
 
-    @staticmethod
-    def get_single_user(email):
+    @classmethod
+    def get_single_user(cls, username):
         """method that returns a single user by their id"""
-        db.cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
-        user = db.cursor.fetchone()
-        return user
+        with db as connection:
+            cursor = connection.cursor(
+                cursor_factory=psycopg2.extras.DictCursor)
+            query = "SELECT * FROM users WHERE username = %s"
+            cursor.execute(query, (username,))
+            user = cursor.fetchone()
+            if user:
+                return cls.display_user(user)
+            return {"message": "user does not exist"}
 
     @staticmethod
-    def get_all_users():
+    def get_user_by_id(user_id):
+        with db as connection:
+            cursor = connection.cursor(
+                cursor_factory=psycopg2.extras.DictCursor)
+            query = "SELECT * FROM users WHERE user_id = %s"
+            cursor.execute(query, (user_id,))
+            user = cursor.fetchone()
+            if user:
+                return user["admin"]
+
+    @classmethod
+    def get_all_users(cls):
         """method that returns all users"""
-        db.cursor.execute("SELECT * FROM users ORDER BY user_id")
-        users = db.cursor.fetchall()
-        data = []
+        with db as connection:
+            cursor = connection.cursor(
+                cursor_factory=psycopg2.extras.DictCursor)
+            cursor.execute("select * from users")
+            users = cursor.fetchall()
+            if users:
+                all_users = []
+                for user in users:
+                    user = cls.display_user(user)
+                    all_users.append(user)
+                return all_users
+            return {"message": "there are no registered users at the moment"}
 
-        for keys, values in enumerate(users):
-            user_id, username, password, email, admin, date_created = values
-            user = {
-
-                "user_id": user_id,
-                "username": username,
-                "password": password,
-                "email": email,
-                "admin": admin,
-                "date_created": date_created
-            }
-            data.append(user)
-        return data
-
-    @classmethod
-    def update_user(cls, user_id, password):
+    @staticmethod
+    def update_user(user_id, password):
         """method that sets a new user password"""
-        db.cursor.execute(
-            "UPDATE users SET password = %s WHERE user_id = %s"(password, user_id))
+        with db as connection:
+            cursor = connection.cursor()
+            query = "UPDATE users SET password = %s WHERE user_id = %s"
+            cursor.execute(query, (password, user_id))
 
-    @classmethod
-    def exists(cls, username):
+    @staticmethod
+    def exists(username):
         """method that checks if a user already exists"""
-        db.cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
-        user = db.cursor.fetchone()
+        with db as connection:
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT * FROM users WHERE username = %s", (username,))
+            user = cursor.fetchone()
 
-        if user:
-            return user
+            if user:
+                return user
+
+    @staticmethod
+    def mailexists(email):
+        """method that checks if a user email already exists"""
+        with db as connection:
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+            user = cursor.fetchone()
+
+            if user:
+                return user
+
+    @staticmethod
+    def display_user(user_payload):
+        payload = {"user_id": user_payload["user_id"],
+                   "username": user_payload["username"],
+                   "email": user_payload["email"],
+                   "admin": user_payload["admin"],
+                   "password": user_payload["password"],
+                   "date_created": user_payload["date_created"]}
+        return payload
+
+
+class Admin(UserModel):
+    def __init__(self, email, username, password, admin=False, date_created=datetime.datetime.utcnow()):
+        super().__init__(email, username, password, admin, date_created)
+        self.admin = True
+        self.password = generate_password_hash(password)
+
+    def create_admin():
+        ben = Admin("bendeh@yahoo.com", "kasee", "asdfg")
+        try:
+            ben.create_user()
+        except:
+            return {"message": "user already exists"}

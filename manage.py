@@ -9,32 +9,38 @@ url = app_config[env].DATABASE_URI
 class Database:
     def __init__(self):
 
+        self.connection = None
+
+        # self.cursor = self.connection.cursor()
+
+    def __enter__(self):
         self.connection = psycopg2.connect(url)
+        return self.connection
 
-        self.cursor = self.connection.cursor()
+    def __exit__(self,exc_type,exc_val,exc_tb):
+        if exc_type or exc_val or exc_tb:
+            self.connection.rollback()
+            self.connection.close()
+        else:
+            self.connection.commit()
+            self.connection.close()
 
-    def commit(self):
-        """commits query commands to the database"""
-        self.connection.commit()
-
-    def query_database(self, query_string):
-        """function to query the database"""
-        self.cursor.execute(query_string)
 
     def create_tables(self, table):
         """creates table"""
-        self.cursor.execute(table)
-        self.commit()
+        with Database() as connection:
+            cursor = connection.cursor()
+            cursor.execute(table)
 
     def drop_tables(self):
         """deletes tables"""
-        self.cursor.execute("DROP TABLE IF EXISTS parcels, users")
-        self.commit()
-
-    def close(self):
-        """closes down the database"""
-        self.cursor.close()
-        self.connection.close()
-
+        with Database() as connection:
+            cursor = connection.cursor()
+            tables = ["DELETE FROM parcels CASCADE",
+                      "DELETE FROM users CASCADE",
+                      "ALTER SEQUENCE users_user_id_seq RESTART WITH 1;",
+                      "ALTER SEQUENCE parcels_parcel_id_seq RESTART WITH 1;"]
+            for table in tables:
+                cursor.execute(table)
 
 db = Database()

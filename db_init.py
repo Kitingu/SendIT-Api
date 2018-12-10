@@ -12,7 +12,7 @@ def create_tables():
                     password VARCHAR(140) NOT NULL,
                     email VARCHAR UNIQUE NOT NULL ,
                     admin BOOL NOT NULL,
-                    date_created TIMESTAMP 
+                    date_created VARCHAR(140) NOT NULL 
                 )
                 """,
 
@@ -29,7 +29,7 @@ def create_tables():
             destination VARCHAR(140) NOT NULL,
             price VARCHAR(140) NOT NULL,
             status VARCHAR(140) NOT NULL,
-            time_created TIMESTAMP 
+            time_created VARCHAR(140) NOT NULL
         )
         """
 

@@ -24,7 +24,12 @@ class BaseTest(unittest.TestCase):
             "password": "@Ha1_pass",
             "confirm_password": "@Ha1_pass"
         }
-
+        self.test_user2 = {
+            "email": "asdf@gmail.com",
+            "username": "benson",
+            "password": "@Ha1_pass",
+            "confirm_password": "@Ha1_pass"
+        }
         self.invalid_user = {
             "email": "@gmail.com",
             "username": "",
@@ -39,16 +44,25 @@ class BaseTest(unittest.TestCase):
         }
         self.login = {
             "email": "asdf@gmail.com",
-            "password": "@Ha1_pass",
+            "password": "@Ha1_pass"
         }
 
         self.login1 = {
             "email": "as@gmail.com",
             "password": "@Ha1_pass",
         }
+        self.wrong_credentials = {
+            "email": "asdf@gmail.com",
+            "password": "@Ha1_pas",
+        }
         self.login_header = {
             "email": "bendeh@gmail.com",
             "password": "@Ha1_pass",
+        }
+
+        self.admin_logins = {
+            "email": "bendeh@yahoo.com",
+            "password": "asdfg",
         }
 
         self.invalid_login = {
@@ -72,18 +86,26 @@ class BaseTest(unittest.TestCase):
             "destination": "kakamega"
         }
         self.update_order = {"destination": "mathare"}
+        self.changelocation = {"location": "mathare"}
         self.invalid_update = {"destination": ""}
         self.cancel_order = {"status": "cancel"}
         self.invalid_cancel_status = {"ghvdshgcs": ""}
 
         user_response = self.client.post('/api/v2/auth/signup', data=json.dumps(self.test_user1),
                                          content_type='application/json')
+
         user_login = self.client.post('/api/v2/auth/login', data=json.dumps(self.login_header),
                                       content_type='application/json')
-        user_token = json.loads(user_login.get_data(as_text=True))
+        user_token = json.loads(user_login.get_data().decode('utf-8'))
         token = user_token['access_token']
+        self.user_header = {"Authorization": "Bearer {}".format(token)}
 
-        self.user_header = {"Authorization": "Bearer " + token}
+        admin_login = self.client.post('/api/v2/auth/login', data=json.dumps(self.admin_logins),
+                                      content_type='application/json')
+        admin_token = json.loads(admin_login.get_data().decode('utf-8'))
+        su_token = admin_token['access_token']
+        print(su_token)
+        self.admin_header = {"Authorization": "Bearer {}".format(su_token)}
 
     def tearDown(self):
         """delete all the tables"""
