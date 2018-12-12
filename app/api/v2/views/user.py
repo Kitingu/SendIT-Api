@@ -2,7 +2,7 @@ from flask_restplus import Resource, Namespace, fields, reqparse
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_raw_jwt
-from app.api.utils.parcel_validator import UserSchema, LoginParser
+from app.api.utils.parcel_validator import UserSchema, LoginParser, validator
 from ..models.user_model import UserModel
 from app.api.v2.views import blacklist
 from marshmallow import post_load
@@ -24,17 +24,14 @@ class User(Resource):
     @post_load()
     def post(self):
         """route for user registration"""
-        if not request.is_json:
+        if not request.json:
             return {"message": "Missing user details or invalid input format"}, 400
         data = v2_user.payload
         schema = UserSchema()
-        result = schema.load(data)
-        errors = result.errors
         error_types = ["username", "email", "password"]
-
-        for error in error_types:
-            if error in errors.keys():
-                return {"message": errors[error][0]}, 400
+        errors = validator(schema, error_types, data)
+        if errors:
+            return errors
         hashed_pass = generate_password_hash(data["password"])
         new_user = UserModel.exists(data["username"])
         mailexists = UserModel.mailexists(data["email"])
@@ -54,7 +51,7 @@ class Login(Resource):
     @v2_user.expect(user_login)
     def post(self):
         """"log in users using email and password"""
-        if not request.is_json:
+        if not request.json:
             return {"message": "Missing user details or invalid input format"}, 400
         data = LoginParser.parser.parse_args()
         email = str(data['email'])

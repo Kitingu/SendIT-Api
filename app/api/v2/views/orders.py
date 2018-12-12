@@ -1,6 +1,6 @@
 from flask_restplus import Resource, Namespace, reqparse, fields
 from flask import request
-from app.api.utils.parcel_validator import ParcelSchema, DestinationParser, LocationParser, StatusParser
+from app.api.utils.parcel_validator import ParcelSchema, validator, DestinationParser, LocationParser, StatusParser
 from ..models.orders_model import OrderModel
 from marshmallow import post_load
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -35,18 +35,15 @@ class Order(Resource):
     @post_load
     def post(self):
         """route for creating a parcel delivery order"""
-        if not request.is_json:
+        if not request.json:
             return {"error ": "Missing user details or invalid input format"}, 400
         data = v2_order.payload
         schema = ParcelSchema()
-        result = schema.load(data)
-        errors = result.errors
         error_types = ['sender_name', 'receiver_name',
                        'receiver_contact', 'weight', 'pickup_location', 'destination']
-
-        for error in error_types:
-            if error in errors.keys():
-                return {'message': {error: errors[error][0]}}, 400
+        errors = validator(schema, error_types, data)
+        if errors:
+            return errors
         user_id = get_jwt_identity()
         if user_id:
             order = OrderModel(data['sender_name'], user_id, data['receiver_name'], data['receiver_contact'],
@@ -83,7 +80,7 @@ class Destination(Resource):
     @v2_order.expect(update_destination)
     def put(self, parcel_id):
         """route used to change the destination of a parcel delivery order"""
-        if not request.is_json:
+        if not request.json:
             return {"error": "Missing user details or invalid input format"}, 400
         data = DestinationParser.parser.parse_args()
         destination = data['destination']
@@ -129,7 +126,7 @@ class ChangeLocation(Resource):
     @v2_order.expect(location)
     def put(self, parcel_id):
         """route used to change the destination of a parcel delivery order"""
-        if not request.is_json:
+        if not request.json:
             return {"error": "Missing user details or invalid input format"}, 400
         data = LocationParser.parser.parse_args()
         location = data['location']
@@ -163,7 +160,7 @@ class ChangeStatus(Resource):
     @v2_order.expect(order_status)
     def put(self, parcel_id):
         """route used to change the status of a parcel delivery order"""
-        if not request.is_json:
+        if not request.json:
             return {"error": "Missing user details or invalid input format"}, 400
         data = StatusParser.parser.parse_args()
         order_status = data['status']

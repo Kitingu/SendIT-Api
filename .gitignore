@@ -8,6 +8,3 @@ venv/
 *.pyc
 .env
 .vscode/
-
-
-ws.py:119: DeprecationWarning:

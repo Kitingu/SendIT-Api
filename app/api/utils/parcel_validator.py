@@ -11,7 +11,7 @@ def validate_length(input):
 
 
 def validate_weight(weight):
-    if weight < 0:
+    if weight <= 0:
         raise ValidationError("please provide valid weight")
 
 
@@ -74,3 +74,10 @@ class StatusParser:
                         required=True,
                         location='json',
                         help='status can either be cancelled or delivered')
+
+def validator(schema, error_types, data):
+    result = schema.load(data)
+    errors = result.errors
+    for error in error_types:
+        if error in errors.keys():
+            return {'message': {error: errors[error][0]}}, 400
