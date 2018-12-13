@@ -1,30 +1,12 @@
+from app.api.utils.app_docs import new_order, update_destination, location, order_status, v2_order
 from flask_restplus import Resource, Namespace, reqparse, fields
 from flask import request
-from app.api.utils.parcel_validator import ParcelSchema, validator, DestinationParser, LocationParser, StatusParser
+from app.api.utils.parcel_validator import ParcelSchema, validator, DestinationSchema, LocationSchema, StatusSchema
 from ..models.orders_model import OrderModel
 from marshmallow import post_load
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.api.utils.mailgun import Mailgun
 from app.api.utils.admin import admin_required
-v2_order = Namespace('parcels')
-new_order = v2_order.model('Orders', {
-    'sender_name': fields.String(description="John Doe"),
-    'receiver_name': fields.String("Alfie kavaluku"),
-    'receiver_contact': fields.String("alfie@gmail.com"),
-    'weight': fields.Integer(10),
-    'pickup_location': fields.String('kiambu'),
-    'destination': fields.String("nairobi")
-})
-update_destination = v2_order.model('order', {
-    'destination': fields.String(description='destination')
-})
-
-location = v2_order.model('order', {
-    'location': fields.String(description='location')
-})
-order_status = v2_order.model('order', {
-    'order_status': fields.String(description='order_status')
-})
 
 
 class Order(Resource):
@@ -82,14 +64,14 @@ class Destination(Resource):
         """route used to change the destination of a parcel delivery order"""
         if not request.json:
             return {"error": "Missing user details or invalid input format"}, 400
-        data = DestinationParser.parser.parse_args()
+        data = v2_order.payload
+        schema = DestinationSchema()
+        error_types = ['destination']
+        errors = validator(schema, error_types, data)
+        if errors:
+            return errors
         destination = data['destination']
 
-        if len(destination) < 3 or destination == '':
-            return {'error': 'please provide a valid destination'}, 400
-
-        if not isinstance(destination, str):
-            return {"error": "destination cannot be a number"}, 400
         order = OrderModel.check_exists(parcel_id)
         if order:
             user_id = get_jwt_identity()
@@ -128,14 +110,14 @@ class ChangeLocation(Resource):
         """route used to change the destination of a parcel delivery order"""
         if not request.json:
             return {"error": "Missing user details or invalid input format"}, 400
-        data = LocationParser.parser.parse_args()
+        data = v2_order.payload
+        schema = LocationSchema()
+        error_types = ['location']
+        errors = validator(schema, error_types, data)
+        if errors:
+            return errors
         location = data['location']
 
-        if len(location) < 3 or location == '':
-            return {'error': 'please provide a valid location'}, 400
-
-        if not isinstance(location, str):
-            return {"error": "location cannot be a number"}, 400
         order = OrderModel.check_exists(parcel_id)
         if order:
             user_id = get_jwt_identity()
@@ -163,13 +145,14 @@ class ChangeStatus(Resource):
         if not request.json:
             return {"error": "Missing user details or invalid input format"}, 400
         data = StatusParser.parser.parse_args()
+        data = v2_order.payload
+        schema = StatusSchema()
+        error_types = ['status']
+        errors = validator(schema, error_types, data)
+        if errors:
+            return errors
         order_status = data['status']
 
-        if len(order_status) < 3 or order_status == '':
-            return {'error': 'please provide a valid order_status'}, 400
-
-        if not isinstance(order_status, str):
-            return {"error": "order_status cannot be a number"}, 400
         order = OrderModel.check_exists(parcel_id)
         if order:
             check_cancel = OrderModel.cancelled_or_delivered(parcel_id)
