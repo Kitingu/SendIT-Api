@@ -1,7 +1,7 @@
 from flask_restplus import Resource, Namespace, reqparse, fields
 from flask import request
 from app.api.utils.app_docs import v1_order, new_order, update_destination
-from app.api.utils.parcel_validator import ParcelSchema, DestinationParser
+from app.api.utils.parcel_validator import ParcelSchema, DestinationSchema, validator
 from ..models.orders_model import OrdersModel
 from ..models.user_model import UserModel
 from marshmallow import post_load
@@ -26,13 +26,11 @@ class Order(Resource):
             return {"msg": "Missing JSON in request"}, 400
         data = v1_order.payload
         schema = ParcelSchema()
-        result = schema.load(data)
-        errors = result.errors
-        parcel_fields = ['sender_name', 'receiver_name',
-                         'receiver_contact', 'weight', 'pickup_location', 'destination']
-        for error in parcel_fields:
-            if error in errors.keys():
-                return {'message': errors[error][0]}, 400
+        error_types = ['sender_name', 'receiver_name',
+                       'receiver_contact', 'weight', 'pickup_location', 'destination']
+        errors = validator(schema, error_types, data)
+        if errors:
+            return errors
         user = user_db.exists(data['sender_name'])
         if user:
             db.create_order(data['sender_name'], data['receiver_name'], data['receiver_contact'], data['weight'],
@@ -47,8 +45,6 @@ class Orders(Resource):
 
     def get(self, parcel_id):
         """route to get a single parcel delivery order"""
-        # if not isinstance(parcel_id,int):
-        #     return {"error":"parcel can only be an integer"},404
         response = db.get_single_order(parcel_id)
         if response:
             return {"message": response}, 200
@@ -74,12 +70,14 @@ class Destination(Resource):
         parcel = db.get_single_order(parcel_id)
         if parcel:
 
-            data = DestinationParser.parser.parse_args()
+            data = v1_order.payload
+            schema = DestinationSchema()
+            error_types = ['destination']
+            errors = validator(schema, error_types, data)
+            if errors:
+                return errors
             destination = data['destination']
-            if len(destination) < 3 or destination == '':
-                return {'error': 'please provide a valid destination'}, 400
-            if not isinstance(destination, str):
-                return {"error": "destination cannot be a number"}, 400
+
             db.update_destination(parcel_id, destination)
             return {"message": "success", "new details": db.get_single_order(parcel_id)}
         return {"error": "parcel does not exist"}, 404

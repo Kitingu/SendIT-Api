@@ -58,50 +58,6 @@ class StatusSchema(Schema):
     status = fields.String(required=True, validate=validate_length)
 
 
-class LoginParser:
-    parser = reqparse.RequestParser()
-
-    parser.add_argument('password',
-                        type=str,
-                        required=True,
-                        location='json',
-                        help="This field cannot be blank")
-
-    parser.add_argument('email',
-                        type=inputs.regex(
-                            r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'),
-                        required=True,
-                        location='json',
-                        help="please enter a valid email")
-
-
-class DestinationParser:
-    parser = reqparse.RequestParser()
-    parser.add_argument('destination',
-                        type=str,
-                        required=True,
-                        location='json',
-                        help='input a valid destination')
-
-
-class LocationParser:
-    parser = reqparse.RequestParser()
-    parser.add_argument('location',
-                        type=str,
-                        required=True,
-                        location='json',
-                        help='input a valid location')
-
-
-class StatusParser:
-    parser = reqparse.RequestParser()
-    parser.add_argument('status',
-                        type=str,
-                        required=True,
-                        location='json',
-                        help='status can either be cancelled or delivered')
-
-
 def validator(schema, error_types, data):
     result = schema.load(data)
     errors = result.errors

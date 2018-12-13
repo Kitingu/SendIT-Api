@@ -2,7 +2,7 @@ from flask_restplus import Resource, Namespace, reqparse, fields
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import request
 from app.api.utils.app_docs import v1_user, new_user, user_login
-from app.api.utils.parcel_validator import UserSchema, LoginParser
+from app.api.utils.parcel_validator import UserSchema, LoginSchema, validator
 from ..models.user_model import UserModel
 from ..models.orders_model import OrdersModel
 from marshmallow import post_load
@@ -23,12 +23,10 @@ class User(Resource):
             return {"msg": "Missing JSON in request"}, 400
         data = v1_user.payload
         schema = UserSchema()
-        result = schema.load(data)
-        errors = result.errors
         error_types = ['username', 'email', 'password']
-        for e in error_types:
-            if e in errors.keys():
-                return {'message': errors[e][0]}, 400
+        errors = validator(schema, error_types, data)
+        if errors:
+            return errors
         hashed_pass = generate_password_hash(data['password'])
         new_user = user_db.get_single_user(data['email'])
         if new_user:
@@ -49,7 +47,7 @@ class Login(Resource):
         """route that allows users  to log in"""
         if not request.is_json:
             return {"msg": "Missing JSON in request"}, 400
-        data = LoginParser.parser.parse_args()
+        data = v1_user.payload
         email = str(data['email'])
         password = str(data['password'])
 
