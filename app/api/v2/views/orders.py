@@ -28,8 +28,8 @@ class Order(Resource):
             return errors
         user_id = get_jwt_identity()
         if user_id:
-            order = OrderModel(data['sender_name'], user_id, data['receiver_name'], data['receiver_contact'],
-                               data['weight'], data['pickup_location'], data['destination'])
+            order = OrderModel(sender_name=data['sender_name'], user_id=user_id, receiver_name=data['receiver_name'], receiver_contact=data['receiver_contact'],
+                               weight=data['weight'], pickup_location=data['pickup_location'], destination=data['destination'])
             order.create_order()
             return {"success": "order submitted successfully",
                     "order details": data}, 201

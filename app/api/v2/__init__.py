@@ -15,7 +15,7 @@ v2_api = Api(v2_blueprint,
              authorizations=authorizations,
              security='Bearer Auth',
              title="SendIT",
-             version="1",
+             version="2",
              description="SendIT is a courier service that helps users deliver parcels to different destinations. SendIT provides courier quotes based on weight categories.",
              contact_email="benlegendj@gmail.com")
 

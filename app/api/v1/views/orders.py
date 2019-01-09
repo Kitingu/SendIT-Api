@@ -33,9 +33,9 @@ class Order(Resource):
             return errors
         user = user_db.exists(data['sender_name'])
         if user:
-            db.create_order(data['sender_name'], data['receiver_name'], data['receiver_contact'], data['weight'],
-                            data['pickup_location'],
-                            data['destination'])
+            db.create_order(sender_name=data['sender_name'], receiver_name=data['receiver_name'], receiver_contact=data['receiver_contact'], weight=data['weight'],
+                            pickup_location=data['pickup_location'],
+                            destination=data['destination'])
             return {"success": "order submitted successfully",
                     "Order details": data}, 201
         return {"error": "please sign up to create an order"}, 400

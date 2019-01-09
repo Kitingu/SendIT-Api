@@ -6,19 +6,21 @@ import psycopg2.extras
 class OrderModel:
     """blueprint for creating a parcel delivery order"""
 
-    def __init__(self, sender_name, user_id, receiver_name, receiver_contact, weight, pickup_location, destination):
+    def __init__(self, **kwargs):
         """function to create parcel orders """
 
-        price = 50 * int(weight)
-        self.sender_name = sender_name,
-        self.user_id = user_id
-        self.receiver_name = receiver_name,
-        self.receiver_contact = receiver_contact,
-        self.weight = int(weight),
-        self.pickup_location = pickup_location,
-        self.current_location = pickup_location,
-        self.destination = destination,
-        self.price = 'Ksh' + str(price),
+        price = 50 * int(kwargs['weight'])
+        self.sender_name= kwargs['sender_name']
+        self.user_id = kwargs['user_id']
+        self.receiver_name= kwargs['receiver_name']
+        self.receiver_contact= kwargs['receiver_contact']
+        self.weight= kwargs['weight']
+        self.pickup_location= kwargs['pickup_location']
+        self.current_location= kwargs['pickup_location']
+        self.destination= kwargs['destination']
+        self.price: 'Ksh' + str(price)
+        self.status: "on-transit"
+        self.price = 'Ksh' + str(price)
         self.status = "on-transit"
         self.time_created = datetime.datetime.utcnow().strftime('%B %d %Y - %H:%M:%S')
 
