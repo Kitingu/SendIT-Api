@@ -5,19 +5,18 @@ class OrdersModel:
     def __init__(self):
         self.db = orders
 
-    def create_order(self, sender_name, receiver_name, receiver_contact, weight, pickup_location, destination
-                     ):
+    def create_order(self, **kwargs):
         """function to create percel orders """
         parcel_id = len(self.db) + 1
-        price = 50 * weight
+        price = 50 * int(kwargs['weight'])
         self.db[parcel_id] = {
-            "sender_name": sender_name,
-            "receiver_name": receiver_name,
-            "receiver_contact": receiver_contact,
-            "weight": weight,
-            "pickup_location": pickup_location,
-            "current_location": pickup_location,
-            "destination": destination,
+            "sender_name": kwargs['sender_name'],
+            "receiver_name": kwargs['receiver_name'],
+            "receiver_contact": kwargs['receiver_contact'],
+            "weight": int(kwargs['weight']),
+            "pickup_location": kwargs['pickup_location'],
+            "current_location": kwargs['pickup_location'],
+            "destination": kwargs['destination'],
             "price": 'Ksh' + str(price),
             "status": "on-transit"
         }
@@ -53,5 +52,6 @@ class OrdersModel:
 
     def get_by_specific_user(self, sender_name):
         """"""
-        order = [order for order in self.db.values() if order['sender_name'] == sender_name]
+        order = [order for order in self.db.values(
+        ) if order['sender_name'] == sender_name]
         return order

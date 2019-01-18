@@ -9,6 +9,7 @@ from app.api.v2 import v2_api
 from flask_jwt_extended import JWTManager
 from manage import db
 from app.api.v2.models.user_model import Admin
+from flask_cors import CORS
 config_name = os.getenv("FLASK_ENV")
 
 
@@ -24,6 +25,7 @@ def create_app(config=config_name):
     Admin.create_admin()
     api = v2_api
     jwt._set_error_handler_callbacks(api)
+    CORS(app)
 
     @app.errorhandler(404)
     def page_not_found(e):

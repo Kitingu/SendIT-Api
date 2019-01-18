@@ -1,9 +1,9 @@
+from .views.user import v1_user
 from flask import Blueprint
 from flask_restplus import Api
 from.views.orders import v1_order
-from .views.user import v1_user
 
-v1_blueprint = Blueprint('v1_blueprint', __name__,url_prefix='/api/v1')
+v1_blueprint = Blueprint('v1_blueprint', __name__, url_prefix='/api/v1')
 v1_api = Api(v1_blueprint,
              title="SendIT",
              version="1",

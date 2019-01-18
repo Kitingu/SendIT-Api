@@ -98,7 +98,7 @@ To check the test Coverage - $nosetests --with-coverage --cover-package=app
 ```
 
 ### Documentation:
-[Heroku](https://v1-sendit-api.herokuapp.com/api/v1/)
+[Heroku](https://senditapi-v2.herokuapp.com/api/v2/)
 
 ### Author:
 Benedict Mwendwa

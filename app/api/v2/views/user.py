@@ -2,21 +2,12 @@ from flask_restplus import Resource, Namespace, fields, reqparse
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_raw_jwt
-from app.api.utils.parcel_validator import UserSchema, LoginParser
+from app.api.utils.parcel_validator import UserSchema, LoginSchema, validator
 from ..models.user_model import UserModel
 from app.api.v2.views import blacklist
 from marshmallow import post_load
 from app.api.utils.admin import admin_required
-
-v2_user = Namespace("auth")
-new_user = v2_user.model("Users", {"email": fields.String("email@example.com"),
-                                   "username": fields.String("test_user"),
-                                   "password": fields.String("test_pass"),
-                                   "confirm_password": fields.String("test_pass")
-                                   })
-
-user_login = v2_user.model("Login", {"email": fields.String("email@example.com"),
-                                     "password": fields.String("test_pass")})
+from app.api.utils.app_docs import v2_user, new_user, user_login
 
 
 class User(Resource):
@@ -24,17 +15,14 @@ class User(Resource):
     @post_load()
     def post(self):
         """route for user registration"""
-        if not request.is_json:
+        if not request.json:
             return {"message": "Missing user details or invalid input format"}, 400
         data = v2_user.payload
         schema = UserSchema()
-        result = schema.load(data)
-        errors = result.errors
         error_types = ["username", "email", "password"]
-
-        for error in error_types:
-            if error in errors.keys():
-                return {"message": errors[error][0]}, 400
+        errors = validator(schema, error_types, data)
+        if errors:
+            return errors
         hashed_pass = generate_password_hash(data["password"])
         new_user = UserModel.exists(data["username"])
         mailexists = UserModel.mailexists(data["email"])
@@ -54,9 +42,15 @@ class Login(Resource):
     @v2_user.expect(user_login)
     def post(self):
         """"log in users using email and password"""
-        if not request.is_json:
+        if not request.json:
             return {"message": "Missing user details or invalid input format"}, 400
-        data = LoginParser.parser.parse_args()
+        data = v2_user.payload
+        schema = LoginSchema()
+        error_types = ["email", "password"]
+        errors = validator(schema, error_types, data)
+        if errors:
+            return errors
+
         email = str(data['email'])
         password = str(data['password'])
 

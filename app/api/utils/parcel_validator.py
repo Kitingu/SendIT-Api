@@ -11,19 +11,25 @@ def validate_length(input):
 
 
 def validate_weight(weight):
-    if weight < 0:
+    if weight <= 0:
         raise ValidationError("please provide valid weight")
 
 
 def validate_password(password):
     if not re.match('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$<>~$%^&*()_+])', password):
-        raise ValidationError("password should at least have an uppercase,lowercase,number and a special character")
+        raise ValidationError(
+            "password should at least have an uppercase,lowercase,number and a special character")
+
+
+def validate_email(email):
+    if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
+        raise ValidationError("please enter a valid email address")
 
 
 class ParcelSchema(Schema):
     sender_name = fields.String(required=True, validate=validate_length)
     receiver_name = fields.String(required=True, validate=validate_length)
-    receiver_contact = fields.Email(required=True)
+    receiver_contact = fields.Email(required=True, validate=validate_email)
     weight = fields.Int(required=True, validate=validate_weight)
     pickup_location = fields.String(required=True, validate=validate_length)
     destination = fields.String(required=True, validate=validate_length)
@@ -31,46 +37,30 @@ class ParcelSchema(Schema):
 
 class UserSchema(Schema):
     username = fields.String(required=True, validate=validate_length)
-    email = fields.Email(required=True)
+    email = fields.Email(required=True, validate=validate_email)
     password = fields.String(required=True, validate=validate_password)
 
 
-class LoginParser:
-    parser = reqparse.RequestParser()
-
-    parser.add_argument('password',
-                        type=str,
-                        required=True,
-                        location='json',
-                        help="This field cannot be blank")
-
-    parser.add_argument('email',
-                        type=inputs.regex(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'),
-                        required=True,
-                        location='json',
-                        help="please enter a valid email")
+class LoginSchema(Schema):
+    email = fields.String(required=True, validate=validate_email)
+    password = fields.String(required=True)
 
 
-class DestinationParser:
-    parser = reqparse.RequestParser()
-    parser.add_argument('destination',
-                        type=str,
-                        required=True,
-                        location='json',
-                        help='input a valid destination')
+class DestinationSchema(Schema):
+    destination = fields.String(required=True, validate=validate_length)
 
-class LocationParser:
-    parser = reqparse.RequestParser()
-    parser.add_argument('location',
-                        type=str,
-                        required=True,
-                        location='json',
-                        help='input a valid location')
 
-class StatusParser:
-    parser = reqparse.RequestParser()
-    parser.add_argument('status',
-                        type=str,
-                        required=True,
-                        location='json',
-                        help='status can either be cancelled or delivered')
+class LocationSchema(Schema):
+    location = fields.String(required=True, validate=validate_length)
+
+
+class StatusSchema(Schema):
+    status = fields.String(required=True, validate=validate_length)
+
+
+def validator(schema, error_types, data):
+    result = schema.load(data)
+    errors = result.errors
+    for error in error_types:
+        if error in errors.keys():
+            return {'message': {error: errors[error][0]}}, 400
