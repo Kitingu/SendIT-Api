@@ -14,7 +14,8 @@ class Database:
         # self.cursor = self.connection.cursor()
 
     def __enter__(self):
-        self.connection = psycopg2.connect(url)
+        # picks db_url automatically from env hence we pass in an empty string.
+        self.connection = psycopg2.connect('')
         return self.connection
 
     def __exit__(self,exc_type,exc_val,exc_tb):

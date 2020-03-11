@@ -70,7 +70,7 @@ class BaseTest(unittest.TestCase):
     def register(self):
         self.user_reg = self.client.post('/api/v1/users', data=json.dumps(self.test_user),
                                          content_type='application/json')
-        status_code = self.user_reg.status_code
+       
 
     def tearDown(self):
         Order_obj.db.clear()
